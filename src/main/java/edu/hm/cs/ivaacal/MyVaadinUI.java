@@ -8,7 +8,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * The Application's "main" class
+ * The Application's "main" class  gugu
  */
 @SuppressWarnings("serial")
 public class MyVaadinUI extends UI
