@@ -37,6 +37,10 @@ public class Worker {
 	 */
 	private Date availabilityChangeDate;
 
+	/**
+	 * Getter for name attribute.
+	 * @return The name of the worker.
+	 */
 	public String getName() {
 		return name;
 	}
@@ -45,6 +49,10 @@ public class Worker {
 		this.name = name;
 	}
 
+	/**
+	 * Getter for google+ id.
+	 * @return The google+ id of the worker.
+	 */
 	public Long getGooglePlusID() {
 		return googlePlusID;
 	}
@@ -53,6 +61,10 @@ public class Worker {
 		this.googlePlusID = googlePlusID;
 	}
 
+	/**
+	 * Getter for image URL.
+	 * @return The image URL of the worker.
+	 */
 	public String getImageURL() {
 		return imageURL;
 	}
@@ -61,6 +73,10 @@ public class Worker {
 		this.imageURL = imageURL;
 	}
 
+	/**
+	 * Getter for the calendar ID.
+	 * @return The calendar ID of the worker.
+	 */
 	public Long getCalendarID() {
 		return CalendarID;
 	}
@@ -69,7 +85,11 @@ public class Worker {
 		CalendarID = calendarID;
 	}
 
-	public Boolean getAvailable() {
+	/**
+	 * Getter for availability status.
+	 * @return The availability of the worker.
+	 */
+	public Boolean isAvailable() {
 		return isAvailable;
 	}
 
@@ -77,6 +97,10 @@ public class Worker {
 		isAvailable = available;
 	}
 
+	/**
+	 * Getter for availability change date. The date, when the availability os the worker will change next.
+	 * @return The availability change date of the worker.
+	 */
 	public Date getAvailabilityChangeDate() {
 		return availabilityChangeDate;
 	}
