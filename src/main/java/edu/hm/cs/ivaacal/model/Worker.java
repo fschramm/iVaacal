@@ -15,7 +15,7 @@ public class Worker {
 	/**
 	   The Google+ Id of the worker.
 	 */
-	private Long googlePlusID;
+	private String googlePlusID;
 
 	/**
 	 * The url to an image of the worker.
@@ -25,7 +25,7 @@ public class Worker {
 	/**
 	 * The Calendar ID of the worker.
 	 */
-	private Long CalendarID;
+	private String CalendarID;
 
 	/**
 	 * Marks if the worker is currently available.
@@ -53,11 +53,11 @@ public class Worker {
 	 * Getter for google+ id.
 	 * @return The google+ id of the worker.
 	 */
-	public Long getGooglePlusID() {
+	public String getGooglePlusID() {
 		return googlePlusID;
 	}
 
-	public void setGooglePlusID(Long googlePlusID) {
+	public void setGooglePlusID(String googlePlusID) {
 		this.googlePlusID = googlePlusID;
 	}
 
@@ -77,11 +77,11 @@ public class Worker {
 	 * Getter for the calendar ID.
 	 * @return The calendar ID of the worker.
 	 */
-	public Long getCalendarID() {
+	public String getCalendarID() {
 		return CalendarID;
 	}
 
-	public void setCalendarID(Long calendarID) {
+	public void setCalendarID(String calendarID) {
 		CalendarID = calendarID;
 	}
 
