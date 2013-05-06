@@ -1,2 +1,4 @@
-ivaacal.iml
-src\main\resources\iVaaCalConfig.xml
+*.iml
+iVaaCalConfig.xml
+.idea/
+target/
