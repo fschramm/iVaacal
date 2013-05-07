@@ -1,5 +1,6 @@
 package edu.hm.cs.ivaacal;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
@@ -15,6 +16,7 @@ import org.apache.log4j.Logger;
  * The Application's "main" class
  */
 @SuppressWarnings("serial")
+@Theme("ivaacal")
 public class MyVaadinUI extends UI
 {
 
