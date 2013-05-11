@@ -1,0 +1,8 @@
+<Configuration>
+    <GoogleAuthURL>https://accounts.google.com/o/oauth2/auth</GoogleAuthURL>
+    <GoogleAPIApplicationName>iVaaCal</GoogleAPIApplicationName>
+    <GoogleAPIKey>AIzaSyCA-xB7kCk2dZ7bRyj6nzR_w0bOdbxclj0</GoogleAPIKey>
+    <GoogleAPIClientID>685462529884.apps.googleusercontent.com</GoogleAPIClientID>
+    <GoogleAPISecret>yyK5RRXcSTOrwoZZaT288c9H</GoogleAPISecret>
+    <GooglePlusMeScope>https://www.googleapis.com/auth/plus.me</GooglePlusMeScope>
+</Configuration>

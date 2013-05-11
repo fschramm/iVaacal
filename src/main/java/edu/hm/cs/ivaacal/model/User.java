@@ -1,7 +1,7 @@
 package edu.hm.cs.ivaacal.model;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Representation of a User of iVaaCal.
@@ -16,10 +16,10 @@ public class User {
 	/**
 	 * The groups that the user has arranged and saved in his account.
 	 */
-	final private List<Group> groups;
+	final private Map<String, Group> groupMap;
 
 	public User() {
-		groups = new LinkedList<>();
+		groupMap = new HashMap<>();
 	}
 
 	public String getName() {
@@ -30,7 +30,7 @@ public class User {
 		this.name = name;
 	}
 
-	public List<Group> getGroups() {
-		return groups;
+	public Map<String, Group> getGroupMap() {
+		return groupMap;
 	}
 }

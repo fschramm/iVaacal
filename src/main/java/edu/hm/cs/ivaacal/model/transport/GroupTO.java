@@ -1,11 +1,19 @@
-package edu.hm.cs.ivaacal.model;
+package edu.hm.cs.ivaacal.model.transport;
 
-import java.util.*;
+import edu.hm.cs.ivaacal.model.Worker;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
 
 /**
- * Representation of a Worker-Group. Users can arrange workers in groups for easier access.
+ * Created with IntelliJ IDEA.
+ * User: Femy
+ * Date: 11/05/13
+ * Time: 16:58
+ * To change this template use File | Settings | File Templates.
  */
-public class Group {
+public class GroupTO {
 
 	/**
 	 * The name of the group.
@@ -20,11 +28,11 @@ public class Group {
 	/**
 	 * The workers arranged in this group.
 	 */
-	final private Map<String, Worker> workerMap;
+	final private Collection<Worker> workers;
 
 
-	public Group() {
-		workerMap = new HashMap<>();
+	public GroupTO() {
+		workers = new LinkedList<>();
 	}
 
 	public String getName() {
@@ -43,7 +51,8 @@ public class Group {
 		this.nextPossibleDate = nextPossibleDate;
 	}
 
-	public Map<String, Worker> getWorkerMap() {
-		return workerMap;
+	public Collection<Worker> getWorkers() {
+		return workers;
 	}
+
 }

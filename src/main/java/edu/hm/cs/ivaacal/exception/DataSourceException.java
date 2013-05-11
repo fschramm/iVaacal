@@ -12,4 +12,12 @@ public class DataSourceException extends Exception{
 	public DataSourceException(String message) {
 		super(message);
 	}
+
+	/**
+	 * DataSourceException with throwable.
+	 * @param throwable The custom message.
+	 */
+	public DataSourceException(Throwable throwable) {
+		super(throwable);
+	}
 }
