@@ -1,1 +1,46 @@
 @import "../green-chameleon/styles.css";
+
+.v-gridlayout-worker {
+    background-color:   rgb(38,77,115);
+    background-color:   rgba(38,77,115,.85);
+    margin:             10px;
+    padding:            4px;
+}
+
+.v-gridlayout-worker .v-label {
+    text-align:         left;
+    padding:            4px;
+}
+
+.v-gridlayout-worker .v-image {
+    padding:            4px;
+}
+
+.v-gridlayout-worker .v-label-available {
+    background-color:   rgb(38,115,38);
+    background-color:   rgba(38,115,38,.85);
+    font-weight:        900;
+
+}
+
+.v-gridlayout-worker .v-label-unavailable {
+    background-color:   rgb(115,38,38);
+    background-color:   rgba(115,38,38,.85);
+    font-weight:        900;
+}
+
+.v-horizontallayout-login .v-textfield {
+    margin:             4px;
+}
+
+.v-horizontallayout-login .v-button {
+    margin:             4px;
+}
+
+.v-horizontallayout-login {
+    text-align:         right;
+}
+
+.v-horizontallayout-headline {
+    text-align:         right;
+}
