@@ -6,13 +6,15 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import edu.hm.cs.ivaacal.controller.DummyUserController;
-import edu.hm.cs.ivaacal.controller.dataSource.GooglePlusSource;
+import edu.hm.cs.ivaacal.controller.PersistentUserController;
+import edu.hm.cs.ivaacal.dataSource.GooglePlusSource;
 import edu.hm.cs.ivaacal.exception.DataSourceException;
 import edu.hm.cs.ivaacal.exception.ModifyUserException;
 import edu.hm.cs.ivaacal.model.Group;
 import edu.hm.cs.ivaacal.model.User;
 import edu.hm.cs.ivaacal.model.Worker;
+import edu.hm.cs.ivaacal.model.transport.GroupTO;
+import edu.hm.cs.ivaacal.model.transport.UserTO;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
@@ -109,7 +111,7 @@ public class MyVaadinUI extends UI {
     }
 
     // TODO: *************GROUPS*************
-    private Accordion generateGroups(User user) throws ModifyUserException {
+    private Accordion generateGroups(UserTO user) throws ModifyUserException {
 
         // TODO: build layout -> groups accordion
         Accordion groups = new Accordion();
@@ -155,7 +157,7 @@ public class MyVaadinUI extends UI {
         // end sample
 
         // TODO: add function -> initialize from user / default user object
-        for (Group group : user.getGroups()) {
+        for (GroupTO group : user.getGroups()) {
             final HorizontalLayout members = new HorizontalLayout();
             for (Worker member : group.getWorkers()) {
                 members.addComponent(generateWorker(member));
@@ -184,12 +186,14 @@ public class MyVaadinUI extends UI {
 
         //generate group area
         try {
-            root.addComponent(generateGroups(new DummyUserController("Sebastian Stumpf").getUser()));
+            root.addComponent(generateGroups(new PersistentUserController("Sebastian Stumpf").getUserTO()));
         } catch (ModifyUserException e) {
             e.printStackTrace();
-        }
+        } catch (DataSourceException e) {
+			e.printStackTrace();
+		}
 
-        // TODO: *************SEARCH*************
+		// TODO: *************SEARCH*************
         // TODO: build layout -> search fields
         // TODO: add function -> search
         // TODO: build layout -> show results
