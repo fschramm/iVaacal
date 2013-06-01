@@ -1,9 +1,10 @@
 package edu.hm.cs.ivaacal.util;
 
-import edu.hm.cs.ivaacal.model.Company;
+import edu.hm.cs.ivaacal.model.JsonCompany;
 import edu.hm.cs.ivaacal.model.User;
 import edu.hm.cs.ivaacal.model.Worker;
 import edu.hm.cs.ivaacal.model.Group;
+import edu.hm.cs.ivaacal.model.persistence.WorkerPO;
 import edu.hm.cs.ivaacal.model.transport.GroupTO;
 import edu.hm.cs.ivaacal.model.transport.UserTO;
 import edu.hm.cs.ivaacal.model.transport.WorkerTO;
@@ -35,7 +36,7 @@ public class ModelConverter {
 
 		// Create worker conversion map, to avoid creating duplicated workerTOs.
 		Map<Worker, WorkerTO> workerConversionMap = new HashMap<>();
-		for(Worker worker: Company.JAVA_ROCKSTARS.getWorkerMap().values()) {
+		for(Worker worker: JsonCompany.JAVA_ROCKSTARS.getWorkerMap().values()) {
 		   workerConversionMap.put(worker, convertWorkerToTO(worker));
 		}
 
@@ -78,6 +79,19 @@ public class ModelConverter {
 
 		return workerTO;
 
+	}
+
+	/**
+	 * Converts a worker to a worker persistence object.
+	 * @param worker The worker to convert.
+	 * @return The persistence object.
+	 */
+	public static WorkerPO convertWorkerToPO(final Worker worker) {
+		WorkerPO workerPO = new WorkerPO();
+
+		workerPO.setGooglePlusID(worker.getGooglePlusID());
+
+		return workerPO;
 	}
 
 
