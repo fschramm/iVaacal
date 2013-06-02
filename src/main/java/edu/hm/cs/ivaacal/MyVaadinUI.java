@@ -1,8 +1,11 @@
 package edu.hm.cs.ivaacal;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.DropTarget;
+import com.vaadin.event.dd.TargetDetails;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.server.ExternalResource;
@@ -10,27 +13,16 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import edu.hm.cs.ivaacal.controller.EphemeralUserController;
 import edu.hm.cs.ivaacal.controller.PersistentUserController;
-import edu.hm.cs.ivaacal.dataSource.GooglePlusSource;
+import edu.hm.cs.ivaacal.controller.UserController;
 import edu.hm.cs.ivaacal.exception.DataSourceException;
 import edu.hm.cs.ivaacal.exception.ModifyUserException;
-import edu.hm.cs.ivaacal.model.Group;
-import edu.hm.cs.ivaacal.model.User;
 import edu.hm.cs.ivaacal.model.Worker;
 import edu.hm.cs.ivaacal.model.transport.GroupTO;
 import edu.hm.cs.ivaacal.model.transport.UserTO;
-import fi.jasoft.dragdroplayouts.DDAccordion;
-import fi.jasoft.dragdroplayouts.DDHorizontalLayout;
-import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
-import fi.jasoft.dragdroplayouts.drophandlers.DefaultAccordionDropHandler;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 
 
@@ -42,26 +34,56 @@ import java.util.Date;
 public class MyVaadinUI extends UI {
 
     private static final Logger LOGGER = Logger.getLogger(MyVaadinUI.class);
-
-    /**
-     * The Configuration of iVaaCal.
-     */
     private static Configuration config = IVaaCalConfiguration.getConfiguration();
 
+    private boolean loggedIn = false;
+    private UserController userController = null;
+    private final VerticalLayout groupsLayout = new VerticalLayout();
+
+    // TODO: add function -> create group
+    private Component generateCreateGroup() {
+
+        // The create group component
+        HorizontalLayout createGroupComponent = new HorizontalLayout();
+        final TextField textField = new TextField();
+        textField.setInputPrompt("Name");
+        createGroupComponent.addComponent(textField);
+
+        Button button = new Button("Create group");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent clickEvent) {
+                LOGGER.info("Click on create group occurred.");
+                if(textField.getValue().isEmpty()) return;
+                GroupTO addedGroup;
+                try {
+                    userController.createGroup(textField.getValue());
+                    //groupsLayout.addComponent(new Label(textField.getValue())userController.createGroup(textField.getValue()));
+                } catch (ModifyUserException e) {
+                    LOGGER.error("Generate group failed: " + e.getMessage());
+                }
+            }
+        });
+        createGroupComponent.addComponent(button);
+
+        createGroupComponent.addStyleName("creategroup");
+
+        return createGroupComponent;
+    }
 
     // TODO: *************WORKER*************
-    private Component generateWorker(Worker worker) {
+    private Component generateWorker(final Worker worker) {
 
-        GridLayout grid = new GridLayout();
-        grid.addStyleName("worker");
-        grid.setRows(2);
-        grid.setColumns(2);
+        GridLayout workerComponent = new GridLayout();
+        workerComponent.addStyleName("worker");
+        workerComponent.setRows(2);
+        workerComponent.setColumns(2);
 
         // Fill in Image
-        grid.addComponent(new Image(null, new ExternalResource(worker.getImageURL())), 0, 0);
+        workerComponent.addComponent(new Image(null, new ExternalResource(worker.getImageURL())), 0, 0);
 
         // Fill in name
-        grid.addComponent(new Label(worker.getName(), ContentMode.HTML), 1, 0);
+        workerComponent.addComponent(new Label(worker.getName(), ContentMode.HTML), 1, 0);
 
         // Fill in Availability
         long availableMinutes = (worker.getAvailabilityChangeDate().getTime() - new Date().getTime())/60000;
@@ -76,11 +98,12 @@ public class MyVaadinUI extends UI {
             availability =  new Label("available in:<br />" + (availableHours == 0l? "": availableHours + " hours, ") + availableMinutes + " minutes", ContentMode.HTML);
             availability.addStyleName("unavailable");
         }
-        grid.addComponent(availability, 0, 1, 1, 1);
+        workerComponent.addComponent(availability, 0, 1, 1, 1);
 
         // TODO: add function -> drag and drop
-        DragAndDropWrapper draggableWorkerWrapper = new DragAndDropWrapper(grid);
+        DragAndDropWrapper draggableWorkerWrapper = new DragAndDropWrapper(workerComponent);
         draggableWorkerWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.WRAPPER);
+        draggableWorkerWrapper.setData(worker);
 
         return draggableWorkerWrapper;
     }
@@ -89,72 +112,119 @@ public class MyVaadinUI extends UI {
     // TODO: *************LOGIN*************
     private Component generateLoginField() {
 
-        HorizontalLayout login = new HorizontalLayout();
-        login.addStyleName("login");
+        HorizontalLayout loginComponent = new HorizontalLayout();
         TextField username = new TextField();
         PasswordField password = new PasswordField();
         username.setInputPrompt("Username");
         password.setInputPrompt("Password");
-        login.addComponent(username);
-        login.addComponent(password);
-        login.addComponent(new Button("Login"));
+        loginComponent.addComponent(username);
+        loginComponent.addComponent(password);
+        loginComponent.addComponent(new Button("Login"));
+        loginComponent.addStyleName("login");
 
         // TODO: build layout -> logged in fields
         // TODO: add function -> login
         // TODO: add function -> logout
-        return login;
+        return loginComponent;
     }
 
     private Component generateHeader() {
 
         // The header Component
-        HorizontalLayout header = new HorizontalLayout();
-        header.setWidth("100%");
+        HorizontalLayout headerComponent = new HorizontalLayout();
+        headerComponent.setWidth("100%");
+        headerComponent.setMargin(true);
 
         // Add Login Fields
         Component login = generateLoginField();
-        header.addComponent(login);
+        headerComponent.addComponent(login);
 
         // Add Headline
         Label title = new Label("iVaaCal");
-        title.addStyleName("h2");
-        header.addComponent(title);
+        title.addStyleName("h1");
+        headerComponent.addComponent(title);
 
-        header.setComponentAlignment(title, Alignment.MIDDLE_RIGHT);
-        header.setComponentAlignment(login, Alignment.MIDDLE_LEFT);
+        headerComponent.setComponentAlignment(title, Alignment.MIDDLE_RIGHT);
+        headerComponent.setComponentAlignment(login, Alignment.MIDDLE_LEFT);
 
-        return header;
+        return headerComponent;
     }
 
-    private Component generateGroup(GroupTO group){
+    private Component generateGroup(final GroupTO group){
 
         // The group component
-        VerticalLayout groupLayout = new VerticalLayout();
-        groupLayout.setMargin(true);
+        final HorizontalLayout deletableGroupComponent = new HorizontalLayout();
+        deletableGroupComponent.setMargin(true);
+        deletableGroupComponent.setSizeFull();
 
-        // The name of the group
+        // For being able to display more than one row the group is a vertical layer
+        VerticalLayout groupComponent = new VerticalLayout();
+        deletableGroupComponent.addComponent(groupComponent);
+
+        // The group is a panel with the name of the group
         Panel panel = new Panel(group.getName());
-        groupLayout.addComponent(panel);
-
-        // The members of the group
-        HorizontalLayout workersLayout = new HorizontalLayout();
+        // And as the content the members of the group
+        final HorizontalLayout workersLayout = new HorizontalLayout();
         for (Worker member : group.getWorkers()) {
             workersLayout.addComponent(generateWorker(member));
         }
         panel.setContent(workersLayout);
 
-        // TODO: add function -> create group
-        // TODO: add function -> delete group
         // TODO: add function -> add worker per drag and drop
+        // Wrap the panel in DragAndDropWrapper
+        DragAndDropWrapper dragDropWrapper = new DragAndDropWrapper(panel);
+        groupComponent.addComponent(dragDropWrapper);
+
+        // Add Drop Handler for Workers
+        dragDropWrapper.setDropHandler(new DropHandler() {
+
+            // Define accept criteria
+            public AcceptCriterion getAcceptCriterion() {
+                return AcceptAll.get();
+            }
+            // Handle drop event
+            public void drop(final DragAndDropEvent event) {
+                final Transferable transferable = event.getTransferable();
+                final DragAndDropWrapper sourceComponent = (DragAndDropWrapper) transferable.getSourceComponent();
+                final TargetDetails dropTargetData = event.getTargetDetails();
+                final DropTarget target = dropTargetData.getTarget();
+                Worker worker = (Worker)sourceComponent.getData();
+
+                LOGGER.info(worker.getName() + " (ID:" + worker.getGooglePlusID() + ") was dropped on group " + group.getName());
+                workersLayout.addComponent(event.getTransferable().getSourceComponent());
+            }
+        });
+
+        // TODO: add function -> delete group
+        // Add a delete Button
+        Button button = new Button("X");
+        button.setSizeFull();
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent clickEvent) {
+                try {
+                    userController.deleteGroup(group.getName());
+                    groupsLayout.removeComponent(deletableGroupComponent);
+                } catch (ModifyUserException e) {
+                    LOGGER.error("Delete group failed: " + e.getStackTrace());
+                }
+            }
+        });
+        deletableGroupComponent.addComponent((button));
+
+        deletableGroupComponent.setExpandRatio(groupComponent, 24);
+        deletableGroupComponent.setExpandRatio(button, 1);
         // TODO: add function -> delete worker
 
-        return groupLayout;
+        return deletableGroupComponent;
     }
 
-    private Component generateGroups(UserTO user) {
+    private Component generateGroups(final UserTO user) {
 
-        // The groups component
-        VerticalLayout groupsLayout = new VerticalLayout();
+        groupsLayout.setMargin(true);
+
+        // generate create group
+        groupsLayout.addComponent(generateCreateGroup());
 
         // Generate an add groups one by one
         for (GroupTO group : user.getGroups()) {
@@ -167,8 +237,26 @@ public class MyVaadinUI extends UI {
 
     }
 
+    private boolean login(final String username, final String password) {
+
+        try {
+            this.userController = new PersistentUserController("Sebastian Stumpf");
+        } catch (DataSourceException e) {
+            LOGGER.info(username + " access denied: " + e.getMessage());
+            return false;
+        }
+        this.loggedIn = true;
+        return true;
+    }
+
+    private void logout() {
+
+        this.userController = null;
+        this.loggedIn = false;
+    }
+
     @Override
-    protected void init(VaadinRequest request) {
+    protected void init(final VaadinRequest request) {
 
         final VerticalLayout root = new VerticalLayout();
         setContent(root);
@@ -176,12 +264,11 @@ public class MyVaadinUI extends UI {
         // generate Header area
         root.addComponent(generateHeader());
 
+        // fake login
+        login("Sebastian Stumpf", "1234");
+
         //generate group area
-        try {
-            root.addComponent(generateGroups(new PersistentUserController("Sebastian Stumpf").getUserTO()));
-        } catch (DataSourceException e) {
-			e.printStackTrace();
-		}
+        root.addComponent(generateGroups(this.userController.getUserTO()));
 
 		// TODO: *************SEARCH*************
         // TODO: build layout -> search fields

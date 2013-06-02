@@ -37,6 +37,14 @@
     margin:             4px;
 }
 
+.v-horizontallayout-creategroup .v-textfield {
+    margin:             4px;
+}
+
+.v-horizontallayout-creategroup .v-button {
+    margin:             4px;
+}
+
 .v-horizontallayout-login {
     text-align:         right;
 }
