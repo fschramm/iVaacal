@@ -20,6 +20,12 @@ public class EphemeralUserController implements UserController {
 
 	private Company company;
 
+    public EphemeralUserController() {
+        this.user = new User();
+        this.user.setName("guest user");
+        this.company = JsonCompany.JAVA_ROCKSTARS;
+    }
+
 	public EphemeralUserController(final String userName) {
 		this.user = new User();
 	    this.user.setName(userName);

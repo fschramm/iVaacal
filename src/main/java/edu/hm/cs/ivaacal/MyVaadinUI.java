@@ -13,6 +13,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
+import edu.hm.cs.ivaacal.controller.EphemeralUserController;
 import edu.hm.cs.ivaacal.controller.PersistentUserController;
 import edu.hm.cs.ivaacal.controller.UserController;
 import edu.hm.cs.ivaacal.exception.DataSourceException;
@@ -37,8 +38,9 @@ public class MyVaadinUI extends UI {
     private static Configuration config = IVaaCalConfiguration.getConfiguration();
 
     private boolean loggedIn = false;
-    private UserController userController = null;
+    private UserController userController = new EphemeralUserController();
     private final VerticalLayout groupsLayout = new VerticalLayout();
+    private final HorizontalLayout loginLogoutComponent = new HorizontalLayout();
 
     // TODO: add function -> create group
     private Component generateCreateGroup() {
@@ -54,7 +56,7 @@ public class MyVaadinUI extends UI {
             @Override
             public void buttonClick(final ClickEvent clickEvent) {
                 LOGGER.info("Click on create group occurred.");
-                if(textField.getValue().isEmpty()) return;
+                if(textField.getValue().isEmpty() || textField.getValue() == "all") return;
                 GroupTO addedGroup;
                 try {
                     userController.createGroup(textField.getValue());
@@ -110,22 +112,44 @@ public class MyVaadinUI extends UI {
 
 
     // TODO: *************LOGIN*************
-    private Component generateLoginField() {
+    private Component generateLoginLogoutField() {
 
-        HorizontalLayout loginComponent = new HorizontalLayout();
-        TextField username = new TextField();
-        PasswordField password = new PasswordField();
-        username.setInputPrompt("Username");
-        password.setInputPrompt("Password");
-        loginComponent.addComponent(username);
-        loginComponent.addComponent(password);
-        loginComponent.addComponent(new Button("Login"));
-        loginComponent.addStyleName("login");
+        final TextField usernameTexfield = new TextField();
+        usernameTexfield.setInputPrompt("Username");
+        final Button loginButton = new Button("Login");
+        loginLogoutComponent.addComponent(usernameTexfield);
+        loginLogoutComponent.addComponent(loginButton);
+
+        final Label usernameLabel = new Label();
+        final Button logoutButton = new Button("Logout");
+
+        loginButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent clickEvent) {
+                login(usernameTexfield.getValue());
+                loginLogoutComponent.removeAllComponents();
+                loginLogoutComponent.addComponent(usernameLabel);
+                loginLogoutComponent.addComponent(logoutButton);
+                usernameLabel.setValue("Logged in: " + usernameTexfield.getValue());
+            }
+        });
+
+        logoutButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent clickEvent) {
+                logout();
+                loginLogoutComponent.removeAllComponents();
+                loginLogoutComponent.addComponent(usernameTexfield);
+                loginLogoutComponent.addComponent(loginButton);
+            }
+        });
+
+        loginLogoutComponent.addStyleName("login");
 
         // TODO: build layout -> logged in fields
         // TODO: add function -> login
         // TODO: add function -> logout
-        return loginComponent;
+        return loginLogoutComponent;
     }
 
     private Component generateHeader() {
@@ -136,7 +160,7 @@ public class MyVaadinUI extends UI {
         headerComponent.setMargin(true);
 
         // Add Login Fields
-        Component login = generateLoginField();
+        Component login = generateLoginLogoutField();
         headerComponent.addComponent(login);
 
         // Add Headline
@@ -197,23 +221,25 @@ public class MyVaadinUI extends UI {
 
         // TODO: add function -> delete group
         // Add a delete Button
-        Button button = new Button("X");
-        button.setSizeFull();
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent clickEvent) {
-                try {
-                    userController.deleteGroup(group.getName());
-                    groupsLayout.removeComponent(deletableGroupComponent);
-                } catch (ModifyUserException e) {
-                    LOGGER.error("Delete group failed: " + e.getStackTrace());
+        if(group.getName() != "all") {
+            Button button = new Button("X");
+            button.setSizeFull();
+            button.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent clickEvent) {
+                    try {
+                        userController.deleteGroup(group.getName());
+                        groupsLayout.removeComponent(deletableGroupComponent);
+                    } catch (ModifyUserException e) {
+                        LOGGER.error("Delete group failed: " + e.getStackTrace());
+                    }
                 }
-            }
-        });
-        deletableGroupComponent.addComponent((button));
+            });
+            deletableGroupComponent.addComponent((button));
 
-        deletableGroupComponent.setExpandRatio(groupComponent, 24);
-        deletableGroupComponent.setExpandRatio(button, 1);
+            deletableGroupComponent.setExpandRatio(groupComponent, 24);
+            deletableGroupComponent.setExpandRatio(button, 1);
+        }
         // TODO: add function -> delete worker
 
         return deletableGroupComponent;
@@ -229,29 +255,31 @@ public class MyVaadinUI extends UI {
         // Generate an add groups one by one
         for (GroupTO group : user.getGroups()) {
             groupsLayout.addComponent(generateGroup(group));
-            groupsLayout.addComponent(generateGroup(group));
-            groupsLayout.addComponent(generateGroup(group));
         }
 
         return groupsLayout;
 
     }
 
-    private boolean login(final String username, final String password) {
+    private boolean login(final String username) {
 
         try {
-            this.userController = new PersistentUserController("Sebastian Stumpf");
+            this.userController = new PersistentUserController(username);
         } catch (DataSourceException e) {
             LOGGER.info(username + " access denied: " + e.getMessage());
             return false;
         }
         this.loggedIn = true;
+        groupsLayout.removeAllComponents();
+        generateGroups(userController.getUserTO());
         return true;
     }
 
     private void logout() {
 
-        this.userController = null;
+        this.userController = new EphemeralUserController();
+        groupsLayout.removeAllComponents();
+        generateGroups(userController.getUserTO());
         this.loggedIn = false;
     }
 
@@ -263,9 +291,6 @@ public class MyVaadinUI extends UI {
 
         // generate Header area
         root.addComponent(generateHeader());
-
-        // fake login
-        login("Sebastian Stumpf", "1234");
 
         //generate group area
         root.addComponent(generateGroups(this.userController.getUserTO()));
