@@ -21,6 +21,7 @@ import edu.hm.cs.ivaacal.exception.ModifyUserException;
 import edu.hm.cs.ivaacal.model.Worker;
 import edu.hm.cs.ivaacal.model.transport.GroupTO;
 import edu.hm.cs.ivaacal.model.transport.UserTO;
+import elemental.html.SessionDescription;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
@@ -36,9 +37,10 @@ public class MyVaadinUI extends UI {
 
     private static final Logger LOGGER = Logger.getLogger(MyVaadinUI.class);
     private static Configuration config = IVaaCalConfiguration.getConfiguration();
+    private static final String CONTROLLER_SESSION_ATTRIBUTE = "controller";
 
     private boolean loggedIn = false;
-    private UserController userController = new EphemeralUserController();
+    private UserController userController;
     private final VerticalLayout groupsLayout = new VerticalLayout();
     private final HorizontalLayout loginLogoutComponent = new HorizontalLayout();
 
@@ -60,6 +62,8 @@ public class MyVaadinUI extends UI {
                 GroupTO addedGroup;
                 try {
                     userController.createGroup(textField.getValue());
+                    groupsLayout.removeAllComponents();
+                    generateGroups(userController.getUserTO());
                     //groupsLayout.addComponent(new Label(textField.getValue())userController.createGroup(textField.getValue()));
                 } catch (ModifyUserException e) {
                     LOGGER.error("Generate group failed: " + e.getMessage());
@@ -117,8 +121,6 @@ public class MyVaadinUI extends UI {
         final TextField usernameTexfield = new TextField();
         usernameTexfield.setInputPrompt("Username");
         final Button loginButton = new Button("Login");
-        loginLogoutComponent.addComponent(usernameTexfield);
-        loginLogoutComponent.addComponent(loginButton);
 
         final Label usernameLabel = new Label();
         final Button logoutButton = new Button("Logout");
@@ -130,7 +132,7 @@ public class MyVaadinUI extends UI {
                 loginLogoutComponent.removeAllComponents();
                 loginLogoutComponent.addComponent(usernameLabel);
                 loginLogoutComponent.addComponent(logoutButton);
-                usernameLabel.setValue("Logged in: " + usernameTexfield.getValue());
+                usernameLabel.setValue("Logged in: " + userController.getUserTO().getName());
             }
         });
 
@@ -145,6 +147,16 @@ public class MyVaadinUI extends UI {
         });
 
         loginLogoutComponent.addStyleName("login");
+
+        if(userController.isLoggedIn()) {
+            loginLogoutComponent.addComponent(usernameLabel);
+            usernameLabel.setValue("Logged in: " + userController.getUserTO().getName());
+            loginLogoutComponent.addComponent(logoutButton);
+        }
+        else {
+            loginLogoutComponent.addComponent(usernameTexfield);
+            loginLogoutComponent.addComponent(loginButton);
+        }
 
         // TODO: build layout -> logged in fields
         // TODO: add function -> login
@@ -265,6 +277,7 @@ public class MyVaadinUI extends UI {
 
         try {
             this.userController = new PersistentUserController(username);
+            getSession().setAttribute(CONTROLLER_SESSION_ATTRIBUTE, userController);
         } catch (DataSourceException e) {
             LOGGER.info(username + " access denied: " + e.getMessage());
             return false;
@@ -278,6 +291,7 @@ public class MyVaadinUI extends UI {
     private void logout() {
 
         this.userController = new EphemeralUserController();
+        getSession().setAttribute(CONTROLLER_SESSION_ATTRIBUTE, userController);
         groupsLayout.removeAllComponents();
         generateGroups(userController.getUserTO());
         this.loggedIn = false;
@@ -286,6 +300,11 @@ public class MyVaadinUI extends UI {
     @Override
     protected void init(final VaadinRequest request) {
 
+        this.userController = (UserController) getSession().getAttribute(CONTROLLER_SESSION_ATTRIBUTE);
+        if(userController == null) {
+            userController = new EphemeralUserController();
+            getSession().setAttribute(CONTROLLER_SESSION_ATTRIBUTE, userController);
+        }
         final VerticalLayout root = new VerticalLayout();
         setContent(root);
 
