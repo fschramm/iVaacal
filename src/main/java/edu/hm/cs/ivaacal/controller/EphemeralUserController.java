@@ -96,4 +96,8 @@ public class EphemeralUserController implements UserController {
 
 	}
 
+    @Override
+    public boolean isLoggedIn() {
+        return false;
+    }
 }

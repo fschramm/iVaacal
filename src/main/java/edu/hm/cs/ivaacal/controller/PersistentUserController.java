@@ -53,4 +53,10 @@ public class PersistentUserController extends EphemeralUserController {
 			throw new ModifyUserException("Could not persistently modify user: " + e.getMessage());
 		}
 	}
+
+    @Override
+    public boolean isLoggedIn() {
+        return true;
+    }
+
 }

@@ -48,4 +48,10 @@ public interface UserController {
 	 */
 	public void removeWorker(final String workerID, final String groupName) throws ModifyUserException;
 
+    /**
+     * Returns true if the user is logged in.
+     * @return true if the user is loggen in.
+     */
+    public boolean isLoggedIn();
+
 }
