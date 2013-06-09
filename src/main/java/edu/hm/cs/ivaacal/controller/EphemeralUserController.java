@@ -102,13 +102,13 @@ public class EphemeralUserController implements UserController {
     }
 
     @Override
-    public void setVisible(final String groupName, final boolean visible) {
-        // TODO: Implement setVisible
+    public void setVisible(final String groupName, final boolean visible)  throws ModifyUserException{
+        Group group = null;
+        if (!user.getGroupMap().containsKey(groupName)) {
+            throw new ModifyUserException("Could set visibility: Group not found.");
+        }
+        group = user.getGroupMap().get(groupName);
+        group.setVisible(visible);
     }
 
-    @Override
-    public boolean isVisible(final String groupName) {
-        // TODO: Implement isVisible
-        return false;
-    }
 }

@@ -45,6 +45,7 @@ public class ModelConverter {
 			GroupTO groupTO = new GroupTO();
 			groupTO.setName(group.getName());
 		    groupTO.setNextPossibleDate(group.getNextPossibleDate());
+            groupTO.setVisible(group.isVisible());
 
 			for(Worker worker: group.getWorkerMap().values()) {
 				groupTO.getWorkers().add(workerConversionMap.get(worker));

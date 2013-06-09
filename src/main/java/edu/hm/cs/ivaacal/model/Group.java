@@ -22,6 +22,11 @@ public class Group {
 	 */
 	final private Map<String, Worker> workerMap;
 
+    /**
+     * Indicates whether the group is visible or not.
+     */
+    private boolean isVisible = true;
+
 
 	public Group() {
 		workerMap = new HashMap<>();
@@ -46,4 +51,12 @@ public class Group {
 	public Map<String, Worker> getWorkerMap() {
 		return workerMap;
 	}
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
 }

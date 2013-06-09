@@ -46,7 +46,13 @@ public class PersistentUserController extends EphemeralUserController {
 		saveUser();
 	}
 
-	private void saveUser() throws ModifyUserException {
+    @Override
+    public void setVisible(String groupName, boolean visible)  throws ModifyUserException{
+        super.setVisible(groupName, visible);
+        saveUser();
+    }
+
+    private void saveUser() throws ModifyUserException {
 		try {
 			userPersistence.saveUser(this.getUser());
 		} catch (DataSourceException e) {

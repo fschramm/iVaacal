@@ -10,6 +10,7 @@ import java.util.LinkedList;
 public class GroupPO {
 	private String name;
 	private Collection<WorkerPO> workers = new LinkedList<>();
+    private boolean isVisible;
 
 	public String getName() {
 		return name;
@@ -22,4 +23,12 @@ public class GroupPO {
 	public Collection<WorkerPO> getWorkers() {
 		return workers;
 	}
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
 }

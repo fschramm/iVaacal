@@ -30,6 +30,11 @@ public class GroupTO {
 	 */
 	final private Collection<Worker> workers;
 
+    /**
+     * Indicates whether the group is visible or not.
+     */
+    private boolean isVisible;
+
 
 	public GroupTO() {
 		workers = new LinkedList<>();
@@ -55,4 +60,11 @@ public class GroupTO {
 		return workers;
 	}
 
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
 }

@@ -48,6 +48,7 @@ public class UserJsonFilePersistence implements UserPersistence{
 		for (Group group: user.getGroupMap().values()) {
 			GroupPO groupPO = new GroupPO();
 			groupPO.setName(group.getName());
+            groupPO.setVisible(group.isVisible());
 
 			for (Worker worker: group.getWorkerMap().values()) {
 				WorkerPO workerPO = new WorkerPO();
@@ -83,6 +84,7 @@ public class UserJsonFilePersistence implements UserPersistence{
 
 				for (GroupPO groupPO : userPO.getGroups()) {
 					ephemeralUserController.createGroup(groupPO.getName());
+                    ephemeralUserController.setVisible(groupPO.getName(), groupPO.isVisible());
 
 					for (WorkerPO workerPO : groupPO.getWorkers()) {
 						ephemeralUserController.addWorker(workerPO.getGooglePlusID(), groupPO.getName());

@@ -312,12 +312,16 @@ public class MyVaadinUI extends UI {
         }
 
         if (!group.getName().equals("all")) {
-            groupContentContainer.setVisible(userController.isVisible(group.getName()));
+            groupContentContainer.setVisible(group.isVisible());
             groupHeadContainer.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
                 @Override
                 public void layoutClick(final LayoutEvents.LayoutClickEvent layoutClickEvent) {
                     groupContentContainer.setVisible(!groupContentContainer.isVisible());
-                    userController.setVisible(group.getName(), groupContentContainer.isVisible());
+                    try {
+                        userController.setVisible(group.getName(), groupContentContainer.isVisible());
+                    } catch (ModifyUserException e) {
+                        LOGGER.error("Set visible for group " + group.getName() + " failed: " + e.getStackTrace());
+                    }
                     LOGGER.info("Visibility of group " + group.getName() + " toggled.");
                 }
             });

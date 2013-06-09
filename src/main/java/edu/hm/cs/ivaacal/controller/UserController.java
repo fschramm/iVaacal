@@ -59,11 +59,6 @@ public interface UserController {
      * @param groupName The name of the group to change visibility.
      * @param visible If the group is visible or not.
      */
-    void setVisible(final String groupName, final boolean visible);
+    void setVisible(final String groupName, final boolean visible) throws ModifyUserException;
 
-    /**
-     * Returns if  a group is visible or invisible.
-     * @param groupName The name of the group.
-     */
-    boolean isVisible(final String groupName);
 }
