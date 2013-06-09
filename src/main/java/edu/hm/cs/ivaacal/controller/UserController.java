@@ -54,4 +54,16 @@ public interface UserController {
      */
     public boolean isLoggedIn();
 
+    /**
+     * Sets a group visible or invisible.
+     * @param groupName The name of the group to change visibility.
+     * @param visible If the group is visible or not.
+     */
+    void setVisible(final String groupName, final boolean visible);
+
+    /**
+     * Returns if  a group is visible or invisible.
+     * @param groupName The name of the group.
+     */
+    boolean isVisible(final String groupName);
 }

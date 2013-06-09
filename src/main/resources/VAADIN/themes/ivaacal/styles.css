@@ -1,15 +1,20 @@
 @import "../green-chameleon/styles.css";
 
 .v-gridlayout-worker {
-    background-color:   rgb(38,77,115);
-    background-color:   rgba(38,77,115,.85);
-    margin:             10px 0px 10px 10px;
+    background-color:   rgb(220,220,220);
+    background-color:   rgba(220,220,220,.85);
+    margin:             8px 0px 0px 8px;
     padding:            4px;
+    color:              black;
+    text-shadow:        none;
+    border:             1px solid black;
+    border-radius:      8px;
 }
 
 .v-gridlayout-worker .v-label {
     text-align:         left;
     padding:            4px;
+        text-shadow:        none;
 }
 
 .v-gridlayout-worker .v-image {
@@ -17,43 +22,96 @@
 }
 
 .v-gridlayout-worker .v-label-available {
-    background-color:   rgb(38,115,38);
-    background-color:   rgba(38,115,38,.85);
+    background-color:   rgb(0,220,0);
+    background-color:   rgba(0,220,0,.85);
     font-weight:        900;
+        text-shadow:        none;
+        border-radius:      8px;
 
 }
 
 .v-gridlayout-worker .v-label-unavailable {
-    background-color:   rgb(115,38,38);
-    background-color:   rgba(115,38,38,.85);
+    background-color:   rgb(220,0,0);
+    background-color:   rgba(220,0,0,.85);
     font-weight:        900;
+    text-shadow:        none;
+    border-radius:      4px;
 }
 
-.v-horizontallayout-login .v-textfield {
-    margin:             4px;
+.v-horizontallayout-header .v-textfield {
+    border-radius:      3px;
 }
 
-.v-horizontallayout-login .v-button {
-    margin:             4px;
+.v-horizontallayout-header .v-button {
+    margin-left:             8px;
 }
 
-.v-horizontallayout-login .v-label {
-    margin:             4px;
-    vertical-align:     middle;
+.v-horizontallayout-header .v-slot-title{
+    text-align:         center;
 }
 
-.v-horizontallayout-creategroup .v-textfield {
-    margin:             4px;
+.v-horizontallayout-header .v-label-title{
+    font-size:          24px;
+    font-weight:        bold;
 }
 
-.v-horizontallayout-creategroup .v-button {
-    margin:             4px;
+.v-horizontallayout-groupoptions .v-button {
+    margin-left:             8px;
 }
 
-.v-horizontallayout-login {
-    text-align:         right;
+.v-horizontallayout-groupoptions .v-slot-deletearea {
+        text-align:         right;
 }
 
-.v-horizontallayout-headline {
-    text-align:         right;
+.v-horizontallayout-groupoptions .v-horizontallayout-deletearea {
+    height:             100px;
+    border:             1px solid;
+    border-color:       rgb(170,170,170);
+    border-radius:      4px;
 }
+
+.v-horizontallayout-groupoptions .v-textfield {
+    border-radius:      3px;
+}
+
+.v-horizontallayout-groupoptions .v-label {
+    font-size:          16px;
+    font-weight:        bold;
+}
+
+.v-ddwrapper-grouphead {
+    background-color:   rgb(220,220,220);
+    background-color:   rgba(220,220,220,.85);
+    border:             1px solid black;
+    border-radius:      4px 4px 0px 0px;
+    padding:            4px;
+}
+
+.v-ddwrapper-grouphead .v-label-groupname {
+    font-size:          18px;
+    font-weight:        bold;
+    color:              black;
+    text-shadow:        none;
+}
+
+.v-ddwrapper-grouphead .v-label-groupdate {
+    font-size:          15px;
+    color:              black;
+    text-shadow:        none;
+    text-align:         center;
+}
+
+.v-verticallayout-groupcontent {
+    background-color:   rgb(170,170,170);
+    background-color:   rgba(170,170,170,.85);
+    border-left:        1px solid black;
+    border-bottom:      1px solid black;
+    border-right:       1px solid black;
+    padding-right:      8px;
+    padding-bottom:     8px;
+    border-radius:      0px 0px 4px 4px;
+    margin:             0px;
+}
+
+
+
