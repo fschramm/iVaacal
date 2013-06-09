@@ -14,7 +14,7 @@
 .v-gridlayout-worker .v-label {
     text-align:         left;
     padding:            4px;
-        text-shadow:        none;
+    text-shadow:        none;
 }
 
 .v-gridlayout-worker .v-image {
@@ -25,8 +25,8 @@
     background-color:   rgb(0,220,0);
     background-color:   rgba(0,220,0,.85);
     font-weight:        900;
-        text-shadow:        none;
-        border-radius:      8px;
+    text-shadow:        none;
+    border-radius:      8px;
 
 }
 

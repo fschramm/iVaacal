@@ -1,8 +1,8 @@
 package edu.hm.cs.ivaacal;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -11,6 +11,7 @@ import com.vaadin.event.dd.TargetDetails;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
@@ -39,8 +40,8 @@ public class MyVaadinUI extends UI {
 
     private static final Logger LOGGER = Logger.getLogger(MyVaadinUI.class);
     private static Configuration config = IVaaCalConfiguration.getConfiguration();
-    private static final String CONTROLLER_SESSION_ATTRIBUTE = "controller";
-    private static final int workersPerRow = 8;
+    private static final String ControllerSessionAttribute = "controller";
+    private static final int workerWidth = 180;
 
     private boolean loggedIn = false;
     private UserController userController;
@@ -101,22 +102,25 @@ public class MyVaadinUI extends UI {
 
     private Component generateWorker(final Worker worker) {
 
-        GridLayout workerComponent = new GridLayout();
-        workerComponent.addStyleName("worker");
-        workerComponent.setRows(2);
-        workerComponent.setColumns(2);
+        GridLayout workerContainer = new GridLayout();
+        workerContainer.addStyleName("worker");
+        workerContainer.setRows(2);
+        workerContainer.setColumns(2);
+        workerContainer.setWidth("" + workerWidth);
 
-        // Fill in Image
-        workerComponent.addComponent(new Image(null, new ExternalResource(worker.getImageURL())), 0, 0);
+        // image
+        Image image = new Image(null, new ExternalResource(worker.getImageURL()));
+        image.setWidth(null);
 
-        // Fill in name
-        workerComponent.addComponent(new Label(worker.getName(), ContentMode.HTML), 1, 0);
+        // name
+        Label name = new Label(worker.getName(), ContentMode.HTML);
+        name.setWidth(null);
 
-        // Fill in Availability
+        // availability
+        Label availability;
         long availableMinutes = (worker.getAvailabilityChangeDate().getTime() - new Date().getTime()) / 60000;
         long availableHours = availableMinutes / 60;
         availableMinutes %= 60;
-        Label availability;
         if (worker.isAvailable() != null && worker.isAvailable()) {
             availability = new Label("available for:<br />" + (availableHours == 0l ? "" : availableHours + " hours, ") + availableMinutes + " minutes", ContentMode.HTML);
             availability.addStyleName("available");
@@ -124,13 +128,16 @@ public class MyVaadinUI extends UI {
             availability = new Label("available in:<br />" + (availableHours == 0l ? "" : availableHours + " hours, ") + availableMinutes + " minutes", ContentMode.HTML);
             availability.addStyleName("unavailable");
         }
-        workerComponent.addComponent(availability, 0, 1, 1, 1);
 
-        DragAndDropWrapper draggableWorkerWrapper = new DragAndDropWrapper(workerComponent);
-        draggableWorkerWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.WRAPPER);
-        draggableWorkerWrapper.setData(worker);
+        workerContainer.addComponent(image, 0, 0);
+        workerContainer.addComponent(availability, 0, 1, 1, 1);
+        workerContainer.addComponent(name, 1, 0);
 
-        return draggableWorkerWrapper;
+        DragAndDropWrapper dragAndDropWrapperWorker = new DragAndDropWrapper(workerContainer);
+        dragAndDropWrapperWorker.setDragStartMode(DragAndDropWrapper.DragStartMode.WRAPPER);
+        dragAndDropWrapperWorker.setData(worker);
+
+        return dragAndDropWrapperWorker;
     }
 
 
@@ -290,7 +297,6 @@ public class MyVaadinUI extends UI {
                 } catch (ModifyUserException e) {
                     LOGGER.error("Add worker " + worker.getName() + "(ID:" + worker.getGooglePlusID() + ") failed: " + e.getStackTrace());
                 }
-                groupContentContainer.setVisible(true);
             }
         };
         // Add Drop Handler for Workers
@@ -299,14 +305,15 @@ public class MyVaadinUI extends UI {
 
         // And as the content the members of the group
         HorizontalLayout groupRowContainer = new HorizontalLayout();
-        groupRowContainer.setWidth("100%");
+        //groupRowContainer.setWidth("100%");
         int counter = 0;
+        int workersPerRow = getWorkersPerRow();
         for (Worker member : group.getWorkers()) {
             groupRowContainer.addComponent(generateWorker(member));
             if (++counter == workersPerRow) {
                 groupContentContainer.addComponent(groupRowContainer);
                 groupRowContainer = new HorizontalLayout();
-                groupRowContainer.setWidth("100%");
+                //groupRowContainer.setWidth("100%");
                 counter = 0;
             }
         }
@@ -328,7 +335,6 @@ public class MyVaadinUI extends UI {
         }
 
 
-
         DragAndDropWrapper groupContentDragDropWrapper = new DragAndDropWrapper(groupContentContainer);
         groupContentDragDropWrapper.setDropHandler(groupDropHandler);
         groupContentDragDropWrapper.addStyleName("groupcontent");
@@ -339,6 +345,11 @@ public class MyVaadinUI extends UI {
         groupContainer.addComponent(groupContentDragDropWrapper);
 
         return groupContainer;
+    }
+
+    private int getWorkersPerRow() {
+        int browserWith = Page.getCurrent().getBrowserWindowWidth();
+        return workerWidth + 32 > browserWith ? 1 : browserWith / (workerWidth + 32);
     }
 
     private Component generateGroups(final UserTO user) {
@@ -408,7 +419,7 @@ public class MyVaadinUI extends UI {
 
         try {
             this.userController = new PersistentUserController(username);
-            getSession().setAttribute(CONTROLLER_SESSION_ATTRIBUTE, userController);
+            getSession().setAttribute(ControllerSessionAttribute, userController);
         } catch (DataSourceException e) {
             LOGGER.info(username + " access denied: " + e.getMessage());
             return false;
@@ -422,22 +433,40 @@ public class MyVaadinUI extends UI {
     private void logout() {
 
         this.userController = new EphemeralUserController();
-        getSession().setAttribute(CONTROLLER_SESSION_ATTRIBUTE, userController);
+        getSession().setAttribute(ControllerSessionAttribute, userController);
         groupsLayout.removeAllComponents();
         generateGroups(userController.getUserTO());
         this.loggedIn = false;
     }
 
+
     @Override
     protected void init(final VaadinRequest request) {
 
-        this.userController = (UserController) getSession().getAttribute(CONTROLLER_SESSION_ATTRIBUTE);
-        if (userController == null) {
-            userController = new EphemeralUserController();
-            getSession().setAttribute(CONTROLLER_SESSION_ATTRIBUTE, userController);
-        }
         final VerticalLayout root = new VerticalLayout();
         setContent(root);
+
+        Refresher refresher = new Refresher();
+        refresher.setRefreshInterval(100);
+        refresher.addListener(new Refresher.RefreshListener() {
+            @Override
+            public void refresh(final Refresher refresher) {
+                getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
+                    public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
+                        groupsLayout.removeAllComponents();
+                        generateGroups(userController.getUserTO());
+                    }
+                });
+            }
+        });
+        addExtension(refresher);
+
+        this.userController = (UserController) getSession().getAttribute(ControllerSessionAttribute);
+        if (userController == null) {
+            userController = new EphemeralUserController();
+            getSession().setAttribute(ControllerSessionAttribute, userController);
+        }
+
 
         // generate Header area
         root.addComponent(generateHeader());
