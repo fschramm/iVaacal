@@ -60,7 +60,7 @@
 }
 
 .v-horizontallayout-groupoptions .v-slot-deletearea {
-        text-align:         right;
+    text-align:         right;
 }
 
 .v-horizontallayout-groupoptions .v-horizontallayout-deletearea {
@@ -101,7 +101,7 @@
     text-align:         center;
 }
 
-.v-verticallayout-groupcontent {
+.v-ddwrapper-groupcontent {
     background-color:   rgb(170,170,170);
     background-color:   rgba(170,170,170,.85);
     border-left:        1px solid black;

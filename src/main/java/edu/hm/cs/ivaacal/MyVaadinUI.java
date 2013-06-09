@@ -2,6 +2,7 @@ package edu.hm.cs.ivaacal;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -57,7 +58,7 @@ public class MyVaadinUI extends UI {
 
         HorizontalLayout buttonWrapper = new HorizontalLayout();
 
-        Button button = new Button("Create group");
+        final Button button = new Button("Create group");
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent clickEvent) {
@@ -150,6 +151,8 @@ public class MyVaadinUI extends UI {
                 loginLogoutComponent.addComponent(usernameLabel);
                 loginLogoutComponent.addComponent(logoutButton);
                 usernameLabel.setValue("Logged in: " + userController.getUserTO().getName());
+                loginLogoutComponent.setComponentAlignment(usernameLabel, Alignment.MIDDLE_LEFT);
+                loginLogoutComponent.setComponentAlignment(logoutButton, Alignment.MIDDLE_LEFT);
             }
         });
 
@@ -160,6 +163,8 @@ public class MyVaadinUI extends UI {
                 loginLogoutComponent.removeAllComponents();
                 loginLogoutComponent.addComponent(usernameTexfield);
                 loginLogoutComponent.addComponent(loginButton);
+                loginLogoutComponent.setComponentAlignment(usernameTexfield, Alignment.MIDDLE_LEFT);
+                loginLogoutComponent.setComponentAlignment(loginButton, Alignment.MIDDLE_LEFT);
             }
         });
 
@@ -216,6 +221,7 @@ public class MyVaadinUI extends UI {
         Label groupName = new Label(group.getName());
         groupName.setStyleName("groupname");
         groupName.setWidth(null);
+        //TODO: use userController method when implemented properly
         // Display next date
         Label nextDate = new Label("Dummy Date: 01.01.01 11:11:11");
         nextDate.setStyleName("groupdate");
@@ -316,12 +322,17 @@ public class MyVaadinUI extends UI {
                 }
             });
         }
+
+
+
+        DragAndDropWrapper groupContentDragDropWrapper = new DragAndDropWrapper(groupContentContainer);
+        groupContentDragDropWrapper.setDropHandler(groupDropHandler);
+        groupContentDragDropWrapper.addStyleName("groupcontent");
+
         groupContentContainer.setData(group);
         groupContentContainer.addComponent(groupRowContainer);
         groupContentContainer.setWidth("100%");
-        groupContentContainer.addStyleName("groupcontent");
-
-        groupContainer.addComponent(groupContentContainer);
+        groupContainer.addComponent(groupContentDragDropWrapper);
 
         return groupContainer;
     }
