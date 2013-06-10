@@ -43,7 +43,6 @@ public class MyVaadinUI extends UI {
     private static final String ControllerSessionAttribute = "controller";
     private static final int workerWidth = 180;
 
-    private boolean loggedIn = false;
     private UserController userController;
     private final VerticalLayout groupsLayout = new VerticalLayout();
     private final HorizontalLayout loginLogoutComponent = new HorizontalLayout();
@@ -135,6 +134,7 @@ public class MyVaadinUI extends UI {
 
         DragAndDropWrapper dragAndDropWrapperWorker = new DragAndDropWrapper(workerContainer);
         dragAndDropWrapperWorker.setDragStartMode(DragAndDropWrapper.DragStartMode.WRAPPER);
+        dragAndDropWrapperWorker.addStyleName("worker");
         dragAndDropWrapperWorker.setData(worker);
 
         return dragAndDropWrapperWorker;
@@ -220,6 +220,7 @@ public class MyVaadinUI extends UI {
 
         // The groupContainerComponent
         final VerticalLayout groupContainer = new VerticalLayout();
+        groupContainer.setStyleName("group");
         groupContainer.setSizeFull();
 
         // The Group Head
@@ -262,10 +263,6 @@ public class MyVaadinUI extends UI {
         groupHeadContainer.setWidth("100%");
         groupHeadContainer.setComponentAlignment(groupName, Alignment.MIDDLE_LEFT);
 
-
-        // For being able to display more than one row the group is a vertical layer
-        final VerticalLayout groupContentContainer = new VerticalLayout();
-
         // Wrap the panel in DragAndDropWrapper
         DragAndDropWrapper groupHeadDragDropWrapper = new DragAndDropWrapper(groupHeadContainer);
         groupHeadDragDropWrapper.setStyleName("grouphead");
@@ -303,19 +300,13 @@ public class MyVaadinUI extends UI {
         groupHeadDragDropWrapper.setDropHandler(groupDropHandler);
         groupContainer.addComponent(groupHeadDragDropWrapper);
 
-        // And as the content the members of the group
-        HorizontalLayout groupRowContainer = new HorizontalLayout();
-        //groupRowContainer.setWidth("100%");
-        int counter = 0;
-        int workersPerRow = getWorkersPerRow();
+
+        // For being able to display more than one row the group is a vertical layer
+        final HorizontalLayout groupContentContainer = new HorizontalLayout();
+        groupContentContainer.setStyleName("groupcontent");
+        groupContentContainer.setWidth(null);
         for (Worker member : group.getWorkers()) {
-            groupRowContainer.addComponent(generateWorker(member));
-            if (++counter == workersPerRow) {
-                groupContentContainer.addComponent(groupRowContainer);
-                groupRowContainer = new HorizontalLayout();
-                //groupRowContainer.setWidth("100%");
-                counter = 0;
-            }
+            groupContentContainer.addComponent(generateWorker(member));
         }
 
         if (!group.getName().equals("all")) {
@@ -338,18 +329,12 @@ public class MyVaadinUI extends UI {
         DragAndDropWrapper groupContentDragDropWrapper = new DragAndDropWrapper(groupContentContainer);
         groupContentDragDropWrapper.setDropHandler(groupDropHandler);
         groupContentDragDropWrapper.addStyleName("groupcontent");
+        groupContentDragDropWrapper.setWidth("100%");
 
         groupContentContainer.setData(group);
-        groupContentContainer.addComponent(groupRowContainer);
-        groupContentContainer.setWidth("100%");
         groupContainer.addComponent(groupContentDragDropWrapper);
 
         return groupContainer;
-    }
-
-    private int getWorkersPerRow() {
-        int browserWith = Page.getCurrent().getBrowserWindowWidth();
-        return workerWidth + 32 > browserWith ? 1 : browserWith / (workerWidth + 32);
     }
 
     private Component generateGroups(final UserTO user) {
@@ -387,7 +372,7 @@ public class MyVaadinUI extends UI {
                 final TargetDetails dropTargetData = dragAndDropEvent.getTargetDetails();
                 final DropTarget target = dropTargetData.getTarget();
                 final Worker worker = (Worker) sourceComponent.getData();
-                final AbstractComponentContainer workerContainer = (AbstractComponentContainer) sourceComponent.getParent().getParent();
+                final AbstractComponentContainer workerContainer = (AbstractComponentContainer) sourceComponent.getParent();
                 final GroupTO group = (GroupTO) workerContainer.getData();
                 if (!group.getName().equals("all")) {
                     try {
@@ -424,7 +409,6 @@ public class MyVaadinUI extends UI {
             LOGGER.info(username + " access denied: " + e.getMessage());
             return false;
         }
-        this.loggedIn = true;
         groupsLayout.removeAllComponents();
         generateGroups(userController.getUserTO());
         return true;
@@ -436,7 +420,6 @@ public class MyVaadinUI extends UI {
         getSession().setAttribute(ControllerSessionAttribute, userController);
         groupsLayout.removeAllComponents();
         generateGroups(userController.getUserTO());
-        this.loggedIn = false;
     }
 
 
@@ -445,29 +428,11 @@ public class MyVaadinUI extends UI {
 
         final VerticalLayout root = new VerticalLayout();
         setContent(root);
-
-        Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(100);
-        refresher.addListener(new Refresher.RefreshListener() {
-            @Override
-            public void refresh(final Refresher refresher) {
-                getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
-                    public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
-                        groupsLayout.removeAllComponents();
-                        generateGroups(userController.getUserTO());
-                    }
-                });
-            }
-        });
-        addExtension(refresher);
-
         this.userController = (UserController) getSession().getAttribute(ControllerSessionAttribute);
         if (userController == null) {
             userController = new EphemeralUserController();
             getSession().setAttribute(ControllerSessionAttribute, userController);
         }
-
-
         // generate Header area
         root.addComponent(generateHeader());
 

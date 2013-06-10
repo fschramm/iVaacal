@@ -1,5 +1,9 @@
 @import "../chameleon-neutral/styles.css";
 
+.v-slot-worker {
+    float:              left;
+}
+
 .v-gridlayout-worker {
     background-color:   rgb(220,220,220);
     background-color:   rgba(220,220,220,.85);
@@ -79,6 +83,11 @@
     font-weight:        bold;
 }
 
+
+.v-verticallayout-group {
+    min-width:          206px;
+}
+
 .v-ddwrapper-grouphead {
     background-color:   rgb(220,220,220);
     background-color:   rgba(220,220,220,.85);
@@ -110,6 +119,10 @@
     padding-bottom:     8px;
     border-radius:      0px 0px 4px 4px;
     margin:             0px;
+}
+
+.v-horizontallayout-groupcontent {
+    width:              100%;
 }
 
 
