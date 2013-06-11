@@ -12,6 +12,7 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
@@ -84,16 +85,24 @@ public class MyVaadinUI extends UI {
         Component deleteDropArea = generateDeleteDropArea();
         deleteDropArea.setWidth(null);
 
-        groupOptionsComponent.addComponent(textField);
-        groupOptionsComponent.addComponent(buttonWrapper);
+        HorizontalLayout createGroupArea = new HorizontalLayout();
+        createGroupArea.setStyleName("create-group-area");
+        createGroupArea.setHeight("49px");
+
+        createGroupArea.addComponent(textField);
+        createGroupArea.addComponent(buttonWrapper);
+        createGroupArea.setComponentAlignment(textField, Alignment.MIDDLE_LEFT);
+        createGroupArea.setComponentAlignment(buttonWrapper, Alignment.MIDDLE_LEFT);
+
+        groupOptionsComponent.addComponent(createGroupArea);
         groupOptionsComponent.addComponent(deleteDropArea);
 
         groupOptionsComponent.setWidth("100%");
         groupOptionsComponent.addStyleName("groupoptions");
         groupOptionsComponent.setMargin(true);
         groupOptionsComponent.setExpandRatio(deleteDropArea, 1.0f);
-        groupOptionsComponent.setComponentAlignment(textField, Alignment.MIDDLE_LEFT);
-        groupOptionsComponent.setComponentAlignment(buttonWrapper, Alignment.MIDDLE_LEFT);
+
+        groupOptionsComponent.setComponentAlignment(createGroupArea, Alignment.MIDDLE_LEFT);
         groupOptionsComponent.setComponentAlignment(deleteDropArea, Alignment.MIDDLE_RIGHT);
 
         return groupOptionsComponent;
