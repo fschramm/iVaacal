@@ -3,6 +3,7 @@ package edu.hm.cs.ivaacal.model;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.hm.cs.ivaacal.dataSource.GooglePlusSource;
 import edu.hm.cs.ivaacal.exception.DataSourceException;
 
 import edu.hm.cs.ivaacal.model.persistence.WorkerPO;
@@ -44,7 +45,7 @@ public class JsonCompany implements Company {
 
 	private JsonCompany(final String companyName) throws DataSourceException {
 
-		//GooglePlusSource googlePlusSource =  new GooglePlusSource();
+		GooglePlusSource googlePlusSource =  new GooglePlusSource();
 
 		File companyFile = new File(PATH, companyName + FILE_EXTENSION);
 		if (!companyFile.exists()) {
@@ -59,9 +60,9 @@ public class JsonCompany implements Company {
 
 		Random random = new Random();
 
-		//try {
+		try {
 			for (WorkerPO workerPO: companyWorkers) {
-				Worker worker = null;// googlePlusSource.loadWorker(workerPO.getGooglePlusID());
+				Worker worker = googlePlusSource.loadWorker(workerPO.getGooglePlusID());
 				// TODO read calendar from google
 				worker.setAvailable(Boolean.valueOf(worker.getName().length() % 2 == 0));
 				worker.setAvailabilityChangeDate(new Date(System.currentTimeMillis() + random.nextInt(10000)));
@@ -70,9 +71,9 @@ public class JsonCompany implements Company {
 					LOGGER.debug("Added Worker: " + worker.getName() + " ID: " + worker.getGooglePlusID());
 				}
 			}
-		/*} catch (DataSourceException e) {
+		} catch (DataSourceException e) {
 			LOGGER.error(e);
-		}   */
+		}
 
 	}
 
