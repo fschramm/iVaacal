@@ -30,7 +30,7 @@ public class JsonCompany implements Company {
 
 	private Map<String, Worker> workerMap = new HashMap<>();
 
-	public static final Company JAVA_ROCKSTARS;
+	private static final Company JAVA_ROCKSTARS;
 
 	static {
 		Company javaRockstarsTemp;
@@ -81,6 +81,14 @@ public class JsonCompany implements Company {
 	public  Map<String, Worker> getWorkerMap() {
 		return workerMap;
 	}
+
+    /**
+     * Returns the default company instance.
+     * @return The default company.
+     */
+    public static Company getInstance() {
+        return JAVA_ROCKSTARS;
+    }
 
 
 }

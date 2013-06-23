@@ -36,7 +36,7 @@ public class ModelConverter {
 
 		// Create worker conversion map, to avoid creating duplicated workerTOs.
 		Map<Worker, WorkerTO> workerConversionMap = new HashMap<>();
-		for(Worker worker: JsonCompany.JAVA_ROCKSTARS.getWorkerMap().values()) {
+		for(Worker worker: JsonCompany.getInstance().getWorkerMap().values()) {
 		   workerConversionMap.put(worker, convertWorkerToTO(worker));
 		}
 
