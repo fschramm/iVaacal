@@ -73,6 +73,12 @@
     text-align:         center;
 }
 
+.title {
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .v-horizontallayout-header .v-label-title{
     font-size:          28px;
     font-weight:        bold;
@@ -83,11 +89,11 @@
     margin-left:             8px;
 }
 
-.v-horizontallayout-groupoptions .v-slot-deletearea {
+.v-slot-deletearea {
     text-align:         right;
 }
 
-.v-horizontallayout-groupoptions .v-horizontallayout-deletearea,
+.v-horizontallayout-deletearea,
 .create-group-area {
     border:             1px solid;
     border-color:       rgb(170,170,170);
@@ -98,7 +104,7 @@
     padding:    8px;
 }
 
-.v-horizontallayout-groupoptions .v-ddwrapper-deletearea {
+.v-ddwrapper-deletearea {
     padding-right:      0px;
 }
 

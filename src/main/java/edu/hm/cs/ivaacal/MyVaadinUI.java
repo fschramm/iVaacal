@@ -10,10 +10,7 @@ import com.vaadin.event.dd.DropTarget;
 import com.vaadin.event.dd.TargetDetails;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable;
-import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -82,9 +79,6 @@ public class MyVaadinUI extends UI {
         buttonWrapper.addComponent(button);
         buttonWrapper.setWidth(null);
 
-        Component deleteDropArea = generateDeleteDropArea();
-        deleteDropArea.setWidth(null);
-
         HorizontalLayout createGroupArea = new HorizontalLayout();
         createGroupArea.setStyleName("create-group-area");
         createGroupArea.setHeight("49px");
@@ -95,15 +89,13 @@ public class MyVaadinUI extends UI {
         createGroupArea.setComponentAlignment(buttonWrapper, Alignment.MIDDLE_LEFT);
 
         groupOptionsComponent.addComponent(createGroupArea);
-        groupOptionsComponent.addComponent(deleteDropArea);
 
         groupOptionsComponent.setWidth("100%");
         groupOptionsComponent.addStyleName("groupoptions");
         groupOptionsComponent.setMargin(true);
-        groupOptionsComponent.setExpandRatio(deleteDropArea, 1.0f);
 
         groupOptionsComponent.setComponentAlignment(createGroupArea, Alignment.MIDDLE_LEFT);
-        groupOptionsComponent.setComponentAlignment(deleteDropArea, Alignment.MIDDLE_RIGHT);
+
 
         return groupOptionsComponent;
     }
@@ -205,23 +197,49 @@ public class MyVaadinUI extends UI {
         // The header Component
         HorizontalLayout headerComponent = new HorizontalLayout();
 
+        VerticalLayout left = new VerticalLayout();
+        VerticalLayout center = new VerticalLayout();
+        VerticalLayout right = new VerticalLayout();
+
+        // create left side
         // Add Login Fields
         Component loginlogout = generateLoginLogoutField();
         loginlogout.setWidth(null);
+        HorizontalLayout loginLayout = new HorizontalLayout();
+        loginLayout.addComponent(loginlogout);
+        loginLayout.setMargin(true);
+        Component createGroup = generateGroupOptionsArea();
 
+        left.addComponent(loginLayout);
+        left.addComponent(createGroup);
+        left.setComponentAlignment(loginLayout, Alignment.TOP_LEFT);
+        left.setComponentAlignment(createGroup, Alignment.BOTTOM_LEFT);
+
+        // create center
         // Add Headline
-        Label title = new Label("iVaaCal");
+        Image title = new Image();
+        title.setSource(new ThemeResource("images/iVaaCal.png"));
         title.addStyleName("title");
-        title.setWidth(null);
+        center.addComponent(title);
+        center.setComponentAlignment(title, Alignment.MIDDLE_CENTER);
 
-        headerComponent.addComponent(loginlogout);
-        headerComponent.addComponent(title);
+        // create right side
+        Component dropZone = generateDeleteDropArea();
+        dropZone.setSizeUndefined();
+        right.setSizeFull();
+        right.setMargin(true);
+        right.addComponent(dropZone);
+        right.setComponentAlignment(dropZone, Alignment.BOTTOM_RIGHT);
+        right.setExpandRatio(dropZone, 1.0f);
+
+
+        headerComponent.addComponent(left);
+        headerComponent.addComponent(center);
+        headerComponent.addComponent(right);
+
         headerComponent.setStyleName("header");
         headerComponent.setWidth("100%");
-        headerComponent.setMargin(true);
-        headerComponent.setExpandRatio(title, 1.0f);
-        headerComponent.setComponentAlignment(loginLogoutComponent, Alignment.MIDDLE_LEFT);
-        headerComponent.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
+
         return headerComponent;
     }
 
@@ -444,9 +462,6 @@ public class MyVaadinUI extends UI {
         }
         // generate Header area
         root.addComponent(generateHeader());
-
-        // generate create group
-        root.addComponent(generateGroupOptionsArea());
 
         //generate group area
         root.addComponent(generateGroups(this.userController.getUserTO()));

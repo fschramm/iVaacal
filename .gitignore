@@ -4,3 +4,5 @@ iVaaCalConfig.xml
 target/
 tmp/
 appdata/users
+src/main/webapp/VAADIN/widgetset/
+src/main/webapp/VAADIN/gwt-unitCache/
