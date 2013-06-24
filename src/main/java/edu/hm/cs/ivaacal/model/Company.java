@@ -13,4 +13,10 @@ public interface Company {
      */
 	public Map<String, Worker> getWorkerMap();
 
+    /**
+     * Returns the physical location of the company as a string.
+     * @return The location of the company as a string.
+     */
+    public String getLocation();
+
 }

@@ -16,14 +16,26 @@ public class EphemeralUserController implements UserController {
 	 */
 	private final static Logger LOGGER = Logger.getLogger(EphemeralUserController.class);
 
+    /**
+     * The model converter used.
+     */
+    private ModelConverter modelConverter;
+
+    /**
+     * The user attached to this controller.
+     */
 	private final User user;
 
+    /**
+     * The company used in this controller.
+     */
 	private Company company;
 
     public EphemeralUserController() {
         this.user = new User();
         this.user.setName("guest user");
         this.company = JsonCompany.getInstance();
+        this.modelConverter = new ModelConverter(this.company);
     }
 
 	public EphemeralUserController(final String userName) {
@@ -44,7 +56,7 @@ public class EphemeralUserController implements UserController {
 
 	@Override
 	public UserTO getUserTO() {
-		return ModelConverter.covertUserToTO(this.user);
+		return modelConverter.covertUserToTO(this.user);
 	}
 
 	@Override

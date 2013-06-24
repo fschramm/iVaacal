@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.hm.cs.ivaacal.dataSource.GooglePlusSource;
 import edu.hm.cs.ivaacal.exception.DataSourceException;
 
+import edu.hm.cs.ivaacal.model.persistence.CompanyPO;
 import edu.hm.cs.ivaacal.model.persistence.WorkerPO;
 import org.apache.log4j.Logger;
 
@@ -20,17 +21,39 @@ public class JsonCompany implements Company {
 	/**
 	 * The logger for this class.
 	 */
-	private final static Logger LOGGER = Logger.getLogger(JsonCompany.class);
+	private static final Logger LOGGER = Logger.getLogger(JsonCompany.class);
 
-	private final static ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * The object mapper used to de-/serialize the company.
+     */
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
-	private static final String FILE_EXTENSION = ".json";
+    /**
+     * The file extension that is used for company persistence files.
+     */
+    private static final String FILE_EXTENSION = ".json";
 
-	private static final String PATH =  "appdata" + File.separator + "companies";
+    /**
+     * The path used for saving the persistence files.
+     */
+    private static final String PATH =  "appdata" + File.separator + "companies";
 
+    /**
+     * The default company used for the iVaaCal application.
+     */
+    private static final Company JAVA_ROCKSTARS;
+
+    /**
+     * All workers of this company, with their id as key.
+     */
 	private Map<String, Worker> workerMap = new HashMap<>();
 
-	private static final Company JAVA_ROCKSTARS;
+    /**
+     * The physical location of the company.
+     */
+    private String location;
+
+
 
 	static {
 		Company javaRockstarsTemp;
@@ -45,42 +68,53 @@ public class JsonCompany implements Company {
 
 	private JsonCompany(final String companyName) throws DataSourceException {
 
-		GooglePlusSource googlePlusSource =  new GooglePlusSource();
-
 		File companyFile = new File(PATH, companyName + FILE_EXTENSION);
 		if (!companyFile.exists()) {
 			throw new DataSourceException("Could not load company with name: " + companyName + " - File not found.");
 		}
-		Collection<WorkerPO> companyWorkers = null;
+		CompanyPO companyPO;
 		try {
-			companyWorkers = objectMapper.readValue(companyFile, new TypeReference<Collection<WorkerPO>>(){});
+            companyPO = objectMapper.readValue(companyFile, CompanyPO.class);
 		} catch (IOException e) {
 			throw new DataSourceException("Could not load company with name: " + companyName + " - File corrupt.");
 		}
 
-		Random random = new Random();
+        location = companyPO.getLocation();
 
-		try {
-			for (WorkerPO workerPO: companyWorkers) {
-				Worker worker = googlePlusSource.loadWorker(workerPO.getGooglePlusID());
-				// TODO read calendar from google
-				worker.setAvailable(Boolean.valueOf(worker.getName().length() % 2 == 0));
-				worker.setAvailabilityChangeDate(new Date(System.currentTimeMillis() + random.nextInt(10000)));
-				workerMap.put(worker.getGooglePlusID(), worker);
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Added Worker: " + worker.getName() + " ID: " + worker.getGooglePlusID());
-				}
-			}
-		} catch (DataSourceException e) {
-			LOGGER.error(e);
-		}
+        loadWorkers(companyPO.getWorkers());
 
 	}
+
+    private void loadWorkers(final Collection<WorkerPO> workerPOs) {
+
+        GooglePlusSource googlePlusSource =  new GooglePlusSource();
+        Random random = new Random();
+
+        try {
+            for (WorkerPO workerPO: workerPOs) {
+                Worker worker = googlePlusSource.loadWorker(workerPO.getGooglePlusID());
+                // TODO read calendar from google
+                worker.setAvailable(Boolean.valueOf(worker.getName().length() % 2 == 0));
+                worker.setAvailabilityChangeDate(new Date(System.currentTimeMillis() + random.nextInt(10000)));
+                workerMap.put(worker.getGooglePlusID(), worker);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Added Worker: " + worker.getName() + " ID: " + worker.getGooglePlusID());
+                }
+            }
+        } catch (DataSourceException e) {
+            LOGGER.error(e);
+        }
+    }
 
 	@Override
 	public  Map<String, Worker> getWorkerMap() {
 		return workerMap;
 	}
+
+    @Override
+    public String getLocation() {
+        return location;
+    }
 
     /**
      * Returns the default company instance.
