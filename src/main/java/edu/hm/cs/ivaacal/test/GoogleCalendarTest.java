@@ -13,11 +13,11 @@ import edu.hm.cs.ivaacal.model.Availability;
  */
 public class GoogleCalendarTest {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         IGoogleCalendar gc = new GoogleCalendar();
         Availability av = gc.getAvailable("mohamed.abergna.1@gmail.com");
         System.out.println(av.getTitle());
-        System.out.println("Busy: "+av.isBusy());
-        System.out.println(av.getDate());
+        System.out.println("Busy: " + av.isBusy());
+        System.out.println(av.getEndDate());
     }
 }

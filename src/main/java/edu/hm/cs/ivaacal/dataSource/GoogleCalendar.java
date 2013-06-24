@@ -35,11 +35,6 @@ public class GoogleCalendar implements IGoogleCalendar {
      */
     private final CalendarService client;
 
-    /**
-     * Token to authorize on GoogleCalendar
-     */
-    private String token;
-
 
     public GoogleCalendar(){
         client = new CalendarService("iVaaCal");
@@ -48,16 +43,14 @@ public class GoogleCalendar implements IGoogleCalendar {
         } catch (AuthenticationException e) {
             LOGGER.error(e);
         }
-        GoogleAuthTokenFactory.UserToken userToken = (GoogleAuthTokenFactory.UserToken) client.getAuthTokenFactory().getAuthToken();
-        token =  userToken.getValue();
     }
 
     @Override
     public Availability getAvailable(String email) {
         Availability actAv = getDailySchedule(email).get(0);
-        Date left = new Date(actAv.getDate().getTime() - System.currentTimeMillis());
+        Date left = new Date(actAv.getStartDate().getTime() - System.currentTimeMillis());
         left.setHours(left.getHours()-1);
-        return new Availability(actAv.isBusy(), left, actAv.getTitle(),actAv.getLocation());
+        return new Availability(actAv.isBusy(), left,left, actAv.getTitle(),actAv.getLocation());
     }
 
 
@@ -96,14 +89,10 @@ public class GoogleCalendar implements IGoogleCalendar {
             When eventTime = eventEntry.getTimes().get(0);
             Date eventStartDate = new Date(eventTime.getStartTime().getValue());
             Date eventEndDate = new Date(eventTime.getEndTime().getValue());
-            if(eventStartDate.before(actTime) && eventEndDate.after(actTime)){
-                actEvent = eventEntry;
-            }
             boolean busy = actEvent.getTransparency().getValue().equals("http://schemas.google.com/g/2005#event.opaque");
-            Date endtime =    new Date(actEvent.getTimes().get(0).getEndTime().getValue());
-            String location =   actEvent.getLocations().get(0).getValueString();
-            String title = actEvent.getTitle().getPlainText();
-            availabilities.add(new Availability(busy,endtime,title,location));
+            String location =   eventEntry.getLocations().get(0).getValueString();
+            String title = eventEntry.getTitle().getPlainText();
+            availabilities.add(new Availability(busy,eventStartDate,eventEndDate,title,location));
         }
         return availabilities;
     }
