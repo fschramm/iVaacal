@@ -1,9 +1,6 @@
 package edu.hm.cs.ivaacal.util;
 
-import edu.hm.cs.ivaacal.model.JsonCompany;
-import edu.hm.cs.ivaacal.model.User;
-import edu.hm.cs.ivaacal.model.Worker;
-import edu.hm.cs.ivaacal.model.Group;
+import edu.hm.cs.ivaacal.model.*;
 import edu.hm.cs.ivaacal.model.persistence.WorkerPO;
 import edu.hm.cs.ivaacal.model.transport.GroupTO;
 import edu.hm.cs.ivaacal.model.transport.UserTO;
@@ -23,12 +20,21 @@ public class ModelConverter {
 	 */
 	private final static Logger LOGGER = Logger.getLogger(ModelConverter.class);
 
+    /**
+     * The company used to get additional worker information.
+     */
+    private Company company;
+
+    public ModelConverter(final Company company) {
+        this.company = company;
+    }
+
 	/**
 	 * Converts an user to a transfer object. Adds the "all" group.
 	 * @param user The user to convert.
 	 * @return The user transport object.
 	 */
-	public static UserTO covertUserToTO(final User user) {
+	public UserTO covertUserToTO(final User user) {
 
 		UserTO userTO = new UserTO();
 
@@ -36,7 +42,7 @@ public class ModelConverter {
 
 		// Create worker conversion map, to avoid creating duplicated workerTOs.
 		Map<Worker, WorkerTO> workerConversionMap = new HashMap<>();
-		for(Worker worker: JsonCompany.JAVA_ROCKSTARS.getWorkerMap().values()) {
+		for(Worker worker: company.getWorkerMap().values()) {
 		   workerConversionMap.put(worker, convertWorkerToTO(worker));
 		}
 
@@ -68,7 +74,7 @@ public class ModelConverter {
 	 * @param worker The worker to convert.
 	 * @return The transfer object.
 	 */
-	private static WorkerTO convertWorkerToTO(final Worker worker) {
+	private WorkerTO convertWorkerToTO(final Worker worker) {
 		WorkerTO workerTO = new WorkerTO();
 
 		workerTO.setAvailabilityChangeDate(worker.getAvailabilityChangeDate());
@@ -87,7 +93,7 @@ public class ModelConverter {
 	 * @param worker The worker to convert.
 	 * @return The persistence object.
 	 */
-	public static WorkerPO convertWorkerToPO(final Worker worker) {
+	public WorkerPO convertWorkerToPO(final Worker worker) {
 		WorkerPO workerPO = new WorkerPO();
 
 		workerPO.setGooglePlusID(worker.getGooglePlusID());
