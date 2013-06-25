@@ -29,9 +29,9 @@
             </snapshots>
         </repository>
         <repository>
-            <id>mandubian-mvn</id>
-            <url>http://mandubian-mvn.googlecode.com/svn/trunk/mandubian-mvn/repository</url>
-        </repository>
+        <id>mandubian-mvn</id>
+        <url>http://mandubian-mvn.googlecode.com/svn/trunk/mandubian-mvn/repository</url>
+    </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>

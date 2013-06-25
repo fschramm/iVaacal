@@ -19,12 +19,9 @@ import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
- * User: Christoph
- * Date: 05.06.13
- * Time: 14:11
- * To change this template use File | Settings | File Templates.
+ * User: Christoph Waldleitner
  */
-public class GoogleCalendar implements IGoogleCalendar {
+public class GoogleCalendar {
 
     /**
      * The logger for this class.
@@ -36,6 +33,9 @@ public class GoogleCalendar implements IGoogleCalendar {
     private final CalendarService client;
 
 
+    /**
+     * Constructor
+     */
     public GoogleCalendar(){
         client = new CalendarService("iVaaCal");
         try {
@@ -45,21 +45,13 @@ public class GoogleCalendar implements IGoogleCalendar {
         }
     }
 
-    @Override
-    public Availability getAvailable(String email) {
-        Availability actAv = getDailySchedule(email).get(0);
-        Date left = new Date(actAv.getStartDate().getTime() - System.currentTimeMillis());
-        left.setHours(left.getHours()-1);
-        return new Availability(actAv.isBusy(), left,left, actAv.getTitle(),actAv.getLocation());
-    }
-
-
-    @Override
-    public Date getNexGroupOpening(String[] email) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    private List<Availability> getDailySchedule(String email){
+    /**
+     * Returns the next entrys to a defined user.
+     *
+     * @param email         email of the user
+     * @return              list of next Availabilities
+     */
+    public ArrayList<Availability> getCalendarEntrys(String email){
         Date actTime = new Date(System.currentTimeMillis());
         URL feedUrl = null;
         try {
@@ -84,16 +76,17 @@ public class GoogleCalendar implements IGoogleCalendar {
         }
 
         CalendarEventEntry actEvent = null;
-        List<Availability> availabilities = new ArrayList<Availability>();
+        ArrayList<Availability> availabilities = new ArrayList<Availability>();
         for(CalendarEventEntry eventEntry : resultEventFeed.getEntries()){
             When eventTime = eventEntry.getTimes().get(0);
             Date eventStartDate = new Date(eventTime.getStartTime().getValue());
             Date eventEndDate = new Date(eventTime.getEndTime().getValue());
-            boolean busy = actEvent.getTransparency().getValue().equals("http://schemas.google.com/g/2005#event.opaque");
+            boolean busy = eventEntry.getTransparency().getValue().equals("http://schemas.google.com/g/2005#event.opaque");
             String location =   eventEntry.getLocations().get(0).getValueString();
             String title = eventEntry.getTitle().getPlainText();
             availabilities.add(new Availability(busy,eventStartDate,eventEndDate,title,location));
         }
+
         return availabilities;
     }
 }

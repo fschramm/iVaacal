@@ -4,43 +4,107 @@ import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
- * User: Christoph
- * Date: 05.06.13
- * Time: 14:08
- * To change this template use File | Settings | File Templates.
+ * User: Christoph Waldleitner
  */
 public class Availability {
 
-    private final boolean busy;
+    /**
+     * Is the user busy on this Event?
+     */
+    private boolean busy;
+    /**
+     * Start date of the Event.
+     */
+    private Date startDate;
+    /**
+     * End date of the Event.
+     */
+    private Date endDate;
+    /**
+     * Title of the Event.
+     */
+    private String title;
+    /**
+     * Location for this Event.
+     */
+    private String location;
 
-    private final Date date;
-
-    private final String title;
-
-    private final String location;
-
-    public Availability(boolean busy, Date date, String title, String location){
+    /**
+     * Constructor
+     *
+     * @param busy
+     * @param startDate
+     * @param endDate
+     * @param title
+     * @param location
+     */
+    public Availability(boolean busy, Date startDate, Date endDate, String title, String location){
         this.busy = busy;
-        this.date = date;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.title = title;
         this.location = location;
     }
 
-
+    /**
+     * Is the user on this Event busy?
+     * @return      true = User is busy on this Event.
+     *              false = User is not busy on this Event.
+     */
     public boolean isBusy() {
         return busy;
     }
 
-
-    public Date getDate() {
-        return date;
-    }
-
+    /**
+     * Returns title of this Event.
+     *
+     * @return      Title of the Event.
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Returns location of this Event.
+     *
+     * @return      Location of the Event.
+     */
     public String getLocation() {
         return location;
+    }
+
+    /**
+     * Returns the start date of the Event.
+     *
+     * @return      Start date of the Event.
+     */
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * Returns the end date of the Event.
+     *
+     * @return      End date of the Event.
+     */
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    /**
+     * Set new start Date for this Event.
+     *
+     * @param startDate     new start Date.
+     */
+    public void setStartDate(Date startDate){
+        this.startDate = startDate;
+    }
+    /**
+     * Set new end Date for this Event.
+     *
+     * @param endDate     new end Date.
+     */
+    public void setEndDate(Date endDate){
+        this.endDate = endDate;
     }
 }
