@@ -17,7 +17,7 @@ import java.util.Date;
 public class GoogleCalendarTest {
 
     public static void main(String[] args) {
-        IAvailableController gc = new AvailableControllerImpl();
+        IAvailableController gc = AvailableControllerImpl.getInstance();
         String[] emails = {"mohamed.abergna.1@gmail.com", "steffi.ivaacal@gmail.com"};
         System.out.println();
         Availability av = gc.getAvailable(emails[0]);

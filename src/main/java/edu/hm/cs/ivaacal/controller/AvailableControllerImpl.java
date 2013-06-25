@@ -29,10 +29,16 @@ public class AvailableControllerImpl implements IAvailableController {
      * Min time in millis for the next group meeting.
      */
     private static final int MIN_TIME_FOR_GROUP_MEETING = 1000 * 60 * 60;
+
     /**
      * The logger for this class.
      */
     private final static Logger LOGGER = Logger.getLogger(AvailableControllerImpl.class);
+
+    /**
+     * The controller instance.
+     */
+    private static final IAvailableController INSTANCE;
 
     /**
      * Adapter to google calendar api.
@@ -59,10 +65,17 @@ public class AvailableControllerImpl implements IAvailableController {
      */
     private final Comparator<Availability> comparator;
 
+
+    static {
+        INSTANCE = new AvailableControllerImpl();
+    }
+
+
+
     /**
      * Constructor
      */
-    public AvailableControllerImpl() {
+    private AvailableControllerImpl() {
 
         /**
          * Initialisation of the comparator.
@@ -139,7 +152,7 @@ public class AvailableControllerImpl implements IAvailableController {
      * @param email     email of the user
      * @return          list of next availabilities for a user
      */
-    private ArrayList<Availability> getAvailability(String email) {
+    private synchronized ArrayList<Availability> getAvailability(String email) {
         long actTime = System.currentTimeMillis();
 
         if (cache.containsKey(email)) {
@@ -243,4 +256,7 @@ public class AvailableControllerImpl implements IAvailableController {
         return new Availability(true, startDate, endDate, "Out of working time", "");
     }
 
+    public static IAvailableController getInstance() {
+        return INSTANCE;
+    }
 }

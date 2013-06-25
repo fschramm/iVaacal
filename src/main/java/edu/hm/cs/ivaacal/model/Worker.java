@@ -37,6 +37,11 @@ public class Worker {
 	 */
 	private Date availabilityChangeDate;
 
+    /**
+     * The email address used by the worker in his calendar.
+     */
+    private String calendarEmail;
+
 	/**
 	 * Getter for name attribute.
 	 * @return The name of the worker.
@@ -108,4 +113,12 @@ public class Worker {
 	public void setAvailabilityChangeDate(Date availabilityChangeDate) {
 		this.availabilityChangeDate = availabilityChangeDate;
 	}
+
+    public String getCalendarEmail() {
+        return calendarEmail;
+    }
+
+    public void setCalendarEmail(String calendarEmail) {
+        this.calendarEmail = calendarEmail;
+    }
 }

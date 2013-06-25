@@ -1,18 +1,20 @@
 package edu.hm.cs.ivaacal.model;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.hm.cs.ivaacal.controller.AvailableControllerImpl;
+import edu.hm.cs.ivaacal.controller.IAvailableController;
 import edu.hm.cs.ivaacal.dataSource.GooglePlusSource;
 import edu.hm.cs.ivaacal.exception.DataSourceException;
-
 import edu.hm.cs.ivaacal.model.persistence.CompanyPO;
-import edu.hm.cs.ivaacal.model.persistence.WorkerPO;
+import edu.hm.cs.ivaacal.model.persistence.CompanyWorkerPO;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JsonCompany model object. Contains all workers from that company.
@@ -85,17 +87,14 @@ public class JsonCompany implements Company {
 
 	}
 
-    private void loadWorkers(final Collection<WorkerPO> workerPOs) {
+    private void loadWorkers(final Collection<CompanyWorkerPO> companyWorkerPOs) {
 
         GooglePlusSource googlePlusSource =  new GooglePlusSource();
-        Random random = new Random();
 
         try {
-            for (WorkerPO workerPO: workerPOs) {
-                Worker worker = googlePlusSource.loadWorker(workerPO.getGooglePlusID());
-                // TODO read calendar from google
-                worker.setAvailable(Boolean.valueOf(worker.getName().length() % 2 == 0));
-                worker.setAvailabilityChangeDate(new Date(System.currentTimeMillis() + random.nextInt(10000)));
+            for (CompanyWorkerPO companyWorkerPO: companyWorkerPOs) {
+                Worker worker = googlePlusSource.loadWorker(companyWorkerPO.getGooglePlusID());
+                worker.setCalendarEmail(companyWorkerPO.getCalendarEmail());
                 workerMap.put(worker.getGooglePlusID(), worker);
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Added Worker: " + worker.getName() + " ID: " + worker.getGooglePlusID());
@@ -106,8 +105,21 @@ public class JsonCompany implements Company {
         }
     }
 
+    /**
+     * Updates the availability status for all workers.
+     */
+    private void updateWorkerAvailability() {
+        IAvailableController availableController = AvailableControllerImpl.getInstance();
+        for (Worker worker: workerMap.values()) {
+            Availability availability =  availableController.getAvailable(worker.getCalendarEmail());
+            worker.setAvailabilityChangeDate(availability.getEndDate());
+            worker.setAvailable(!availability.isBusy());
+        }
+    }
+
 	@Override
 	public  Map<String, Worker> getWorkerMap() {
+        updateWorkerAvailability();
 		return workerMap;
 	}
 

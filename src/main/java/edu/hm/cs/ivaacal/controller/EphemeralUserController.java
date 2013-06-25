@@ -19,7 +19,12 @@ public class EphemeralUserController implements UserController {
     /**
      * The model converter used.
      */
-    private ModelConverter modelConverter;
+    private final ModelConverter modelConverter;
+
+    /**
+     * The Availability Controller used.
+     */
+    private final IAvailableController availableController = AvailableControllerImpl.getInstance();
 
     /**
      * The user attached to this controller.
@@ -29,7 +34,7 @@ public class EphemeralUserController implements UserController {
     /**
      * The company used in this controller.
      */
-	private Company company;
+	private final Company company;
 
     public EphemeralUserController() {
         this.user = new User();
@@ -42,11 +47,13 @@ public class EphemeralUserController implements UserController {
 		this.user = new User();
 	    this.user.setName(userName);
 		this.company = JsonCompany.getInstance();
+        this.modelConverter = new ModelConverter(this.company);
 	}
 
 	public EphemeralUserController(final User user) {
 		this.user = user;
 		this.company = JsonCompany.getInstance();
+        this.modelConverter = new ModelConverter(this.company);
 	}
 
 	public User getUser() {
@@ -56,6 +63,7 @@ public class EphemeralUserController implements UserController {
 
 	@Override
 	public UserTO getUserTO() {
+        updateGroupOpening();
 		return modelConverter.covertUserToTO(this.user);
 	}
 
@@ -121,6 +129,15 @@ public class EphemeralUserController implements UserController {
         }
         group = user.getGroupMap().get(groupName);
         group.setVisible(visible);
+    }
+
+    /**
+     * Updates the opening dates for all groups.
+     */
+    private void updateGroupOpening() {
+        for (Group group: this.user.getGroupMap().values()) {
+            group.setNextPossibleDate(availableController.getNexGroupOpening(group.getCalendarEmails()));
+        }
     }
 
 }

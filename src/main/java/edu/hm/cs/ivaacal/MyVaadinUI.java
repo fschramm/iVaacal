@@ -26,6 +26,8 @@ import edu.hm.cs.ivaacal.util.AcceptNothing;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -44,6 +46,7 @@ public class MyVaadinUI extends UI {
     private UserController userController;
     private final VerticalLayout groupsLayout = new VerticalLayout();
     private final HorizontalLayout loginLogoutComponent = new HorizontalLayout();
+    private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     private Component generateGroupOptionsArea() {
 
@@ -256,9 +259,14 @@ public class MyVaadinUI extends UI {
         Label groupName = new Label(group.getName());
         groupName.setStyleName("groupname");
         groupName.setWidth(null);
-        //TODO: use userController method when implemented properly
         // Display next date
-        Label nextDate = new Label("Dummy Date: 01.01.01 11:11:11");
+        String groupAvailabilityText;
+        if (group.getNextPossibleDate() != null) {
+            groupAvailabilityText = "Next common available date: " + dateFormat.format(group.getNextPossibleDate());
+        } else {
+            groupAvailabilityText = "No common available date in the near future.";
+        }
+        Label nextDate = new Label(groupAvailabilityText);
         nextDate.setStyleName("groupdate");
         groupName.setWidth(null);
         // Delete button

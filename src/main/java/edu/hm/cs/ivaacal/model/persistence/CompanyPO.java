@@ -10,7 +10,7 @@ public class CompanyPO {
 
     private String location;
 
-    private Collection<WorkerPO> workers = new LinkedList<>();
+    private Collection<CompanyWorkerPO> workers = new LinkedList<>();
 
     public String getLocation() {
         return location;
@@ -20,11 +20,11 @@ public class CompanyPO {
         this.location = location;
     }
 
-    public Collection<WorkerPO> getWorkers() {
+    public Collection<CompanyWorkerPO> getWorkers() {
         return workers;
     }
 
-    public void setWorkers(Collection<WorkerPO> workers) {
+    public void setWorkers(Collection<CompanyWorkerPO> workers) {
         this.workers = workers;
     }
 }

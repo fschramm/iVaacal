@@ -59,4 +59,13 @@ public class Group {
     public void setVisible(boolean visible) {
         isVisible = visible;
     }
+
+    public String[] getCalendarEmails() {
+        List<String> calendarEmails = new LinkedList<>();
+        for (Worker worker: workerMap.values()) {
+            calendarEmails.add(worker.getCalendarEmail());
+        }
+
+        return calendarEmails.toArray(new String[calendarEmails.size()]);
+    }
 }
