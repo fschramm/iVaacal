@@ -65,10 +65,17 @@ public class GoogleCalendar {
         startTime.setMinutes(0);
         startTime.setSeconds(0);
 
+        Date endTime = (Date)actTime.clone();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endTime);
+        cal.add(Calendar.DAY_OF_MONTH, 7);
+
         myQuery.setMinimumStartTime(new DateTime(startTime.getTime()));
+        myQuery.setMaximumStartTime(new DateTime(cal.getTime()));
         CalendarEventFeed resultEventFeed = null;
         try {
             resultEventFeed = client.getFeed(myQuery, CalendarEventFeed.class);
+            LOGGER.debug(email+" succsessful received calendar feed");
         } catch (IOException e) {
             LOGGER.error(e);
         } catch (ServiceException e) {
@@ -86,6 +93,7 @@ public class GoogleCalendar {
             String title = eventEntry.getTitle().getPlainText();
             availabilities.add(new Availability(busy,eventStartDate,eventEndDate,title,location));
         }
+        LOGGER.debug(email+" added all durations");
 
         return availabilities;
     }

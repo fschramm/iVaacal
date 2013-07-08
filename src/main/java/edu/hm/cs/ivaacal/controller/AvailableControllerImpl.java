@@ -128,7 +128,7 @@ public class AvailableControllerImpl implements IAvailableController {
         ArrayList<Availability> availabilities = getAvailability(email);
         for (int i = 0; i < availabilities.size(); i++) {
             Availability actEvent = availabilities.get(i);
-            if (actEvent.getStartDate().before(actTime) && actEvent.getEndDate().after(actTime)) {
+            if ((actEvent.getStartDate().before(actTime)||actEvent.getStartDate().getTime()==actTime.getTime()) && actEvent.getEndDate().after(actTime)) {
                 Date endDate = actEvent.getEndDate();
                 for (int j = i + 1; j < availabilities.size(); j++) {
                     Availability nextEvent = availabilities.get(j);
@@ -164,6 +164,7 @@ public class AvailableControllerImpl implements IAvailableController {
 
         ArrayList<Availability> availabilities = buildAvailabilities(email);
         cache.put(email, new CacheEntry(availabilities, System.currentTimeMillis()));
+        LOGGER.debug(email+" successful create Availabilities");
 
         return availabilities;
     }
