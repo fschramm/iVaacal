@@ -113,6 +113,7 @@ public class EphemeralUserController implements UserController {
 			throw new ModifyUserException("Could not remove user: User not in group.");
 		}
 		group.getWorkerMap().remove(workerID);
+        updateGroupOpening();
 
 	}
 

@@ -1,1 +1,20 @@
-{"location":"Hochschule München", "workers":[{"googlePlusID":"100000772955143706751","calendarEmail":"mohamed.abergna.1@gmail.com"},{"googlePlusID":"102116084957024922058","calendarEmail":"mohamed.abergna.1@gmail.com"},{"googlePlusID":"+HelloKitty","calendarEmail":"mohamed.abergna.1@gmail.com"},{"googlePlusID":"103829002444236169384","calendarEmail":"steffi.ivaacal@gmail.com"},{"googlePlusID":"103919114469990731787","calendarEmail":"steffi.ivaacal@gmail.com"}]}
+{
+  "location" : "Hochschule München",
+  "workers" : [
+      { "calendarEmail" : "mohamed.abergna.1@gmail.com",
+        "googlePlusID" : "110695339370134438800"
+      },
+      { "calendarEmail" : "java.ahit.amar.singh@gmail.com",
+        "googlePlusID" : "107927015963048264532"
+      },
+      { "calendarEmail" : "steffi.ivaacal@gmail.com",
+        "googlePlusID" : "102107182854020158321"
+      },
+      { "calendarEmail" : "waler89@gmail.com",
+        "googlePlusID" : "114514387901511996090"
+      },
+      { "calendarEmail" : "thomas.gruber.ivaacal@gmail.com",
+        "googlePlusID" : "103858384928203909642"
+      }
+    ]
+}
